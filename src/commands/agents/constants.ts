@@ -1,4 +1,4 @@
-import { chalk } from '../../utils/command-helpers.js'
+import { colorFn } from '../../utils/command-helpers.js'
 
 /**
  * Available agent types for task creation
@@ -23,12 +23,12 @@ export const SESSION_STATES = ['new', 'running', 'done', 'error', 'cancelled'] a
  * Color mapping for agent task status display
  */
 export const STATUS_COLORS = {
-  new: chalk.blue,
-  running: chalk.yellow,
-  done: chalk.green,
-  error: chalk.red,
-  cancelled: chalk.gray,
-  archived: chalk.dim,
+  new: colorFn('blue'),
+  running: colorFn('yellow'),
+  done: colorFn('green'),
+  error: colorFn('red'),
+  cancelled: colorFn('gray'),
+  archived: colorFn('dim'),
 } as const
 
 /**

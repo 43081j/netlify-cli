@@ -2,7 +2,7 @@ import { OptionValues } from 'commander'
 
 import { listSites } from '../../lib/api.js'
 import { startSpinner, stopSpinner } from '../../lib/spinner.js'
-import { chalk, log, logJson } from '../../utils/command-helpers.js'
+import { styleText, log, logJson } from '../../utils/command-helpers.js'
 import BaseCommand from '../base-command.js'
 
 export const sitesSearch = async (searchTerm: string, options: OptionValues, command: BaseCommand) => {
@@ -28,7 +28,7 @@ export const sitesSearch = async (searchTerm: string, options: OptionValues, com
     }
 
     log()
-    log(chalk.yellow(`No projects found matching '${searchTerm}'`))
+    log(styleText('yellow', `No projects found matching '${searchTerm}'`))
     log()
     return
   }
@@ -45,17 +45,19 @@ export const sitesSearch = async (searchTerm: string, options: OptionValues, com
   }
 
   log()
-  log(`Found ${chalk.greenBright(sites.length)} project${sites.length === 1 ? '' : 's'} matching '${searchTerm}':`)
+  log(
+    `Found ${styleText('greenBright', String(sites.length))} project${sites.length === 1 ? '' : 's'} matching '${searchTerm}':`,
+  )
   log()
 
   sites.forEach((site) => {
-    log(`${chalk.greenBright(site.name)} - ${chalk.dim(site.id)}`)
-    log(`  ${chalk.whiteBright.bold('url:')}  ${chalk.yellowBright(site.ssl_url)}`)
+    log(`${styleText('greenBright', site.name)} - ${styleText('dim', site.id)}`)
+    log(`  ${styleText(['whiteBright', 'bold'], 'url:')}  ${styleText('yellowBright', site.ssl_url)}`)
     if (site.build_settings?.repo_url) {
-      log(`  ${chalk.whiteBright.bold('repo:')} ${chalk.white(site.build_settings.repo_url)}`)
+      log(`  ${styleText(['whiteBright', 'bold'], 'repo:')} ${styleText('white', site.build_settings.repo_url)}`)
     }
     if (site.account_name) {
-      log(`  ${chalk.whiteBright.bold('account:')} ${chalk.white(site.account_name)}`)
+      log(`  ${styleText(['whiteBright', 'bold'], 'account:')} ${styleText('white', site.account_name)}`)
     }
     log(`─────────────────────────────────────────────────`)
   })

@@ -1,6 +1,6 @@
 import { OptionValues } from 'commander'
 
-import { chalk, log, logAndThrowError } from '../../utils/command-helpers.js'
+import { styleText, log, logAndThrowError } from '../../utils/command-helpers.js'
 import { promptEnvCloneOverwrite } from '../../utils/prompts/env-clone-prompt.js'
 import BaseCommand from '../base-command.js'
 
@@ -29,7 +29,7 @@ const cloneEnvVars = async ({ api, force, siteFrom, siteTo }): Promise<boolean> 
   const keysFrom = envelopeFrom.map(({ key }) => key)
 
   if (keysFrom.length === 0) {
-    log(`${chalk.green(siteFrom.name)} has no environment variables, nothing to clone`)
+    log(`${styleText('green', siteFrom.name)} has no environment variables, nothing to clone`)
     return false
   }
 
@@ -86,12 +86,14 @@ export const envClone = async (options: OptionValues, command: BaseCommand) => {
 
   if (errorFrom) {
     return logAndThrowError(
-      `Can't find project with id ${chalk.bold(siteId.from)}. Please make sure the project exists.`,
+      `Can't find project with id ${styleText('bold', siteId.from)}. Please make sure the project exists.`,
     )
   }
 
   if (errorTo) {
-    return logAndThrowError(`Can't find project with id ${chalk.bold(siteId.to)}. Please make sure the project exists.`)
+    return logAndThrowError(
+      `Can't find project with id ${styleText('bold', siteId.to)}. Please make sure the project exists.`,
+    )
   }
 
   const success = await cloneEnvVars({ api, siteFrom, siteTo, force })
@@ -100,7 +102,9 @@ export const envClone = async (options: OptionValues, command: BaseCommand) => {
     return false
   }
 
-  log(`Successfully cloned environment variables from ${chalk.green(siteFrom.name)} to ${chalk.green(siteTo.name)}`)
+  log(
+    `Successfully cloned environment variables from ${styleText('green', siteFrom.name)} to ${styleText('green', siteTo.name)}`,
+  )
   log(`Changes will require a redeploy to take effect on any deployed versions of your project.`)
 
   return true

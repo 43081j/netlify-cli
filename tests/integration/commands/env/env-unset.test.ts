@@ -2,7 +2,7 @@ import process from 'process'
 
 import { describe, expect, test, vi, beforeEach, afterAll } from 'vitest'
 
-import { chalk, log } from '../../../../src/utils/command-helpers.js'
+import { styleText, log } from '../../../../src/utils/command-helpers.js'
 import { destructiveCommandMessages } from '../.././../../src/utils/prompts/prompt-messages.js'
 import { FixtureTestContext, setupFixtureTests } from '../../utils/fixture.js'
 import { getEnvironmentVariables, withMockApi, setTTYMode, setCI, setTestingPrompts } from '../../utils/mock-api.js'
@@ -83,9 +83,7 @@ describe('env:unset command', async () => {
     // already exists as value in withMockApi
     const existingVar = 'EXISTING_VAR'
     const warningMessage = generateWarning(existingVar)
-    const expectedSuccessMessage = `Unset environment variable ${chalk.yellow(existingVar)} in the ${chalk.magenta(
-      'all',
-    )} context`
+    const expectedSuccessMessage = `Unset environment variable ${styleText('yellow', existingVar)} in the ${styleText('magenta', 'all')} context`
 
     beforeEach(() => {
       vi.resetModules()

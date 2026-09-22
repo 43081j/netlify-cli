@@ -1,7 +1,7 @@
 import { OptionValues } from 'commander'
 import inquirer from 'inquirer'
 
-import { chalk, log } from '../../utils/command-helpers.js'
+import { styleText, log } from '../../utils/command-helpers.js'
 import BaseCommand from '../base-command.js'
 import { login } from '../login/login.js'
 
@@ -23,10 +23,10 @@ export const switchCommand = async (options: OptionValues, command: BaseCommand)
     if (matchedUser) {
       command.netlify.globalConfig.set('userId', matchedUser.id)
       log('')
-      log(`You're now using ${chalk.bold(availableUsersChoices[matchedUser.id])}.`)
+      log(`You're now using ${styleText('bold', availableUsersChoices[matchedUser.id])}.`)
       return
     }
-    log(`No account found matching ${chalk.bold(options.email)}, showing all available accounts.`)
+    log(`No account found matching ${styleText('bold', options.email)}, showing all available accounts.`)
     log('')
   }
 
@@ -49,6 +49,6 @@ export const switchCommand = async (options: OptionValues, command: BaseCommand)
     command.netlify.globalConfig.set('userId', selectedAccount[0])
     log('')
     // @ts-expect-error TS(2532) FIXME: Object is possibly 'undefined'.
-    log(`You're now using ${chalk.bold(selectedAccount[1])}.`)
+    log(`You're now using ${styleText('bold', selectedAccount[1])}.`)
   }
 }

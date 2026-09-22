@@ -1,6 +1,6 @@
 import type { OptionValues } from 'commander'
 
-import { chalk } from '../../utils/command-helpers.js'
+import { styleText } from '../../utils/command-helpers.js'
 import requiresSiteInfoWithProject from '../../utils/hooks/requires-site-info-with-project.js'
 import type BaseCommand from '../base-command.js'
 
@@ -75,7 +75,7 @@ export const createAgentsCommand = (program: BaseCommand) => {
       await agentsStop(id, options, command)
     })
 
-  const name = chalk.greenBright('`agents`')
+  const name = styleText('greenBright', '`agents`')
 
   return program
     .command('agents')

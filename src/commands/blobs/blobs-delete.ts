@@ -1,6 +1,6 @@
 import { getStore } from '@netlify/blobs'
 
-import { chalk, logAndThrowError, log } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, log } from '../../utils/command-helpers.js'
 import { promptBlobDelete } from '../../utils/prompts/blob-delete-prompts.js'
 
 /**
@@ -24,8 +24,12 @@ export const blobsDelete = async (storeName: string, key: string, _options: Reco
   try {
     await store.delete(key)
 
-    log(`${chalk.greenBright('Success')}: Blob ${chalk.yellow(key)} deleted from store ${chalk.yellow(storeName)}`)
+    log(
+      `${styleText('greenBright', 'Success')}: Blob ${styleText('yellow', key)} deleted from store ${styleText('yellow', storeName)}`,
+    )
   } catch {
-    return logAndThrowError(`Could not delete blob ${chalk.yellow(key)} from store ${chalk.yellow(storeName)}`)
+    return logAndThrowError(
+      `Could not delete blob ${styleText('yellow', key)} from store ${styleText('yellow', storeName)}`,
+    )
   }
 }

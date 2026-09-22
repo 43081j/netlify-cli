@@ -1,7 +1,7 @@
 import process from 'process'
 
 import { getStore } from '@netlify/blobs'
-import chalk from 'chalk'
+import { styleText } from '../../../../src/utils/command-helpers.js'
 import inquirer from 'inquirer'
 import { describe, expect, test, vi, beforeEach, afterAll } from 'vitest'
 
@@ -61,9 +61,7 @@ describe('blobs:set command', () => {
 
     const warningMessage = generateWarning(key, storeName)
 
-    const successMessage = `${chalk.greenBright('Success')}: Blob ${chalk.yellow(key)} set in store ${chalk.yellow(
-      storeName,
-    )}`
+    const successMessage = `${styleText('greenBright', 'Success')}: Blob ${styleText('yellow', key)} set in store ${styleText('yellow', storeName)}`
 
     beforeEach(() => {
       vi.resetModules()
@@ -217,7 +215,7 @@ describe('blobs:set command', () => {
           } catch (error) {
             expect(error).toBeInstanceOf(Error)
             expect((error as Error).message).toContain(
-              `Could not set blob ${chalk.yellow(key)} in store ${chalk.yellow(storeName)}`,
+              `Could not set blob ${styleText('yellow', key)} in store ${styleText('yellow', storeName)}`,
             )
           }
 

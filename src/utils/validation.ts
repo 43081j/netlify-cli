@@ -1,6 +1,6 @@
 import { InvalidArgumentError } from 'commander'
 
-import { BANG, chalk } from './command-helpers.js'
+import { BANG, styleText } from './command-helpers.js'
 
 export const MAX_SITE_NAME_LENGTH = 63
 
@@ -20,7 +20,7 @@ export const getGeoCountryArgParser = (exampleCommand: string) => (arg: string) 
   if (!/^[a-z]{2}$/i.test(arg)) {
     throw new Error(
       `The geo country code must use a two letter abbreviation.
-      ${chalk.red(BANG)}  Example:
+      ${styleText('red', BANG)}  Example:
       ${exampleCommand}`,
     )
   }

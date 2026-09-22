@@ -3,7 +3,7 @@ import inquirer from 'inquirer'
 import { pick } from '../../utils/object-utilities.js'
 import prettyjson from 'prettyjson'
 
-import { chalk, logAndThrowError, log, logJson, warn, type APIError } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, log, logJson, warn, type APIError } from '../../utils/command-helpers.js'
 import getRepoData from '../../utils/get-repo-data.js'
 import { configureRepo } from '../../utils/init/config.js'
 import { isInteractive } from '../../utils/scripted-commands.js'
@@ -153,7 +153,7 @@ export const sitesCreate = async (options: OptionValues, command: BaseCommand) =
   }
 
   log()
-  log(chalk.greenBright.bold.underline(`Project Created`))
+  log(styleText(['greenBright', 'bold', 'underline'], `Project Created`))
   log()
 
   const siteUrl = site.ssl_url || site.url

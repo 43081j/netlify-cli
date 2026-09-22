@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import semver from 'semver'
-import { chalk, logAndThrowError, log, version } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, log, version } from '../../utils/command-helpers.js'
 import type { RunRecipeOptions } from '../../commands/recipes/recipes.js'
 
 const ATTRIBUTES_REGEX = /(\S*)="([^\s"]*)"/gim
@@ -239,9 +239,7 @@ export const downloadAndWriteContextFiles = async (
       }
       if (minimumCLIVersion && semver.lt(version, minimumCLIVersion)) {
         return logAndThrowError(
-          `This command requires version ${minimumCLIVersion} or above of the Netlify CLI. Refer to ${chalk.underline(
-            'https://ntl.fyi/update-cli',
-          )} for information on how to update.`,
+          `This command requires version ${minimumCLIVersion} or above of the Netlify CLI. Refer to ${styleText('underline', 'https://ntl.fyi/update-cli')} for information on how to update.`,
         )
       }
 
@@ -263,9 +261,7 @@ export const downloadAndWriteContextFiles = async (
         if (existing.provider?.toLowerCase() === NETLIFY_PROVIDER) {
           if (remote.version === existing.version) {
             log(
-              `You're all up to date! ${chalk.underline(
-                absoluteFilePath,
-              )} contains the latest version of the context files.`,
+              `You're all up to date! ${styleText('underline', absoluteFilePath)} contains the latest version of the context files.`,
             )
             return false
           }
@@ -291,7 +287,7 @@ export const downloadAndWriteContextFiles = async (
 
       await writeFile(absoluteFilePath, contents)
 
-      log(`${existing ? 'Updated' : 'Created'} context files at ${chalk.underline(absoluteFilePath)}`)
+      log(`${existing ? 'Updated' : 'Created'} context files at ${styleText('underline', absoluteFilePath)}`)
       return true
     }),
   )

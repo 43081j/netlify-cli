@@ -1,10 +1,10 @@
 import boxen from 'boxen'
 
-import { chalk, log, NETLIFY_CYAN_HEX } from './command-helpers.js'
+import { styleText, log, NETLIFY_CYAN_HEX } from './command-helpers.js'
 
 export const printBanner = (options: { url: string }): void => {
   log(
-    boxen(`Local dev server ready: ${chalk.inverse.cyan(options.url)}`, {
+    boxen(`Local dev server ready: ${styleText(['inverse', 'cyan'], options.url)}`, {
       padding: 1,
       margin: 1,
       textAlignment: 'center',

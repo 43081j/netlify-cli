@@ -1,7 +1,7 @@
 import type { NetlifyAPI } from '@netlify/api'
 import { Octokit } from '@octokit/rest'
 
-import { chalk, logAndThrowError, log } from '../command-helpers.js'
+import { styleText, logAndThrowError, log } from '../command-helpers.js'
 import { getGitHubToken as ghauth, type Token } from '../gh-auth.js'
 import type { GlobalConfigStore } from '../types.js'
 import type { BaseCommand } from '../../commands/index.js'
@@ -9,8 +9,8 @@ import type { BaseCommand } from '../../commands/index.js'
 import { createDeployKey, formatErrorMessage, getBuildSettings, saveNetlifyToml, setupSite } from './utils.js'
 
 const formatRepoAndOwner = ({ repoName, repoOwner }: { repoName: string; repoOwner: string }) => ({
-  name: chalk.magenta(repoName),
-  owner: chalk.magenta(repoOwner),
+  name: styleText('magenta', repoName),
+  owner: styleText('magenta', repoOwner),
 })
 
 const PAGE_SIZE = 100
@@ -31,7 +31,7 @@ export const getGitHubToken = async ({ globalConfig }: { globalConfig: GlobalCon
         return githubToken.token
       }
     } catch {
-      log(chalk.yellow('Token is expired or invalid!'))
+      log(styleText('yellow', 'Token is expired or invalid!'))
       log('Generating a new Github token...')
     }
   }
@@ -202,7 +202,10 @@ const addNotificationHooks = async ({ api, siteId, token }) => {
       try {
         await upsertHook({ ntlHooks, event, api, siteId, token })
       } catch (error) {
-        const message = formatErrorMessage({ message: `Failed settings Netlify hook ${chalk.magenta(event)}`, error })
+        const message = formatErrorMessage({
+          message: `Failed settings Netlify hook ${styleText('magenta', event)}`,
+          error,
+        })
         return logAndThrowError(message)
       }
     }),

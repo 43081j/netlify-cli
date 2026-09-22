@@ -3,7 +3,7 @@ import process from 'process'
 import open from 'open'
 import isDockerContainer from 'is-docker'
 
-import { chalk, log } from './command-helpers.js'
+import { styleText, log } from './command-helpers.js'
 
 type BrowserUnableMessage = {
   message: string
@@ -12,9 +12,9 @@ type BrowserUnableMessage = {
 
 const unableToOpenBrowserMessage = function ({ message, url }: BrowserUnableMessage) {
   log('---------------------------')
-  log(chalk.redBright(`Error: Unable to open browser automatically: ${message}`))
-  log(chalk.cyan('Please open your browser and open the URL below:'))
-  log(chalk.bold(url))
+  log(styleText('redBright', `Error: Unable to open browser automatically: ${message}`))
+  log(styleText('cyan', 'Please open your browser and open the URL below:'))
+  log(styleText('bold', url))
   log('---------------------------')
 }
 

@@ -3,7 +3,7 @@ import { rm } from 'node:fs/promises'
 import { startSpinner, stopSpinner } from '../lib/spinner.js'
 import { waitPort } from '../lib/wait-port.js'
 
-import { logAndThrowError, log, NETLIFYDEVERR, NETLIFYDEVLOG, chalk } from './command-helpers.js'
+import { logAndThrowError, log, NETLIFYDEVERR, NETLIFYDEVLOG, styleText } from './command-helpers.js'
 import { runCommand } from './shell.js'
 import { startStaticServer } from './static-server.js'
 import type { ServerSettings } from './types.js'
@@ -71,7 +71,7 @@ export const startFrameworkServer = async function ({
               settings.frameworkPort
             } to be ready. Are you sure this is the correct port${
               settings.framework ? ` for ${settings.framework}` : ''
-            }? Change this with the ${chalk.yellow('targetPort')} option in your ${chalk.yellow('netlify.toml')}.`,
+            }? Change this with the ${styleText('yellow', 'targetPort')} option in your ${styleText('yellow', 'netlify.toml')}.`,
           })
         }
       }, FRAMEWORK_PORT_WARN_TIMEOUT_MS)
@@ -90,9 +90,7 @@ export const startFrameworkServer = async function ({
     log(NETLIFYDEVERR, `Please make sure your framework server is running on port ${settings.frameworkPort}`)
     log(
       NETLIFYDEVERR,
-      `If not, you can configure it using the ${chalk.yellow('targetPort')} option in your ${chalk.yellow(
-        'netlify.toml',
-      )}.`,
+      `If not, you can configure it using the ${styleText('yellow', 'targetPort')} option in your ${styleText('yellow', 'netlify.toml')}.`,
     )
     return logAndThrowError(error_)
   }

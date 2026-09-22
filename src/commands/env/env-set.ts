@@ -1,6 +1,6 @@
 import { OptionValues } from 'commander'
 
-import { chalk, logAndThrowError, log, logJson } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, log, logJson } from '../../utils/command-helpers.js'
 import { SUPPORTED_CONTEXTS, ALL_ENVELOPE_SCOPES, translateFromEnvelopeToMongo } from '../../utils/env/index.js'
 import { promptOverwriteEnvVariable } from '../../utils/prompts/env-set-prompts.js'
 import BaseCommand from '../base-command.js'
@@ -131,13 +131,11 @@ export const envSet = async (key: string, value: string, options: OptionValues, 
     return false
   }
 
-  const withScope = scope ? ` scoped to ${chalk.white(scope)}` : ''
-  const withSecret = secret ? ` as a ${chalk.blue('secret')}` : ''
+  const withScope = scope ? ` scoped to ${styleText('white', scope)}` : ''
+  const withSecret = secret ? ` as a ${styleText('blue', 'secret')}` : ''
   const contextType = SUPPORTED_CONTEXTS.includes(context || 'all') ? 'context' : 'branch'
   log(
-    `Set environment variable ${chalk.yellow(
-      `${key}${value && !secret ? `=${value}` : ''}`,
-    )}${withScope}${withSecret} in the ${chalk.magenta(context || 'all')} ${contextType}`,
+    `Set environment variable ${styleText('yellow', `${key}${value && !secret ? `=${value}` : ''}`)}${withScope}${withSecret} in the ${styleText('magenta', context || 'all')} ${contextType}`,
   )
   log(`Changes will require a redeploy to take effect on any deployed versions of your project.`)
 }

@@ -3,7 +3,7 @@ import type { OptionValues } from 'commander'
 import prettyjson from 'prettyjson'
 
 import {
-  chalk,
+  styleText,
   logAndThrowError,
   exit,
   getToken,
@@ -43,9 +43,11 @@ export const status = async (options: OptionValues, command: BaseCommand) => {
     log(`Not logged in. Please log in to see project status.`)
     log()
     if (!isInteractive()) {
-      log(`Run ${chalk.cyanBright('`netlify login --request "<message>"`')} to request access from a team member.`)
+      log(
+        `Run ${styleText('cyanBright', '`netlify login --request "<message>"`')} to request access from a team member.`,
+      )
     } else {
-      log(`Login with ${chalk.cyanBright('`netlify login`')} command`)
+      log(`Login with ${styleText('cyanBright', '`netlify login`')} command`)
     }
     return exit()
   }
@@ -141,9 +143,9 @@ export const status = async (options: OptionValues, command: BaseCommand) => {
     prettyjson.render({
       'Current project': siteInfo.name,
       'Netlify TOML': site.configPath,
-      'Admin URL': chalk.magentaBright(siteInfo.admin_url),
-      'Project URL': chalk.cyanBright(siteInfo.ssl_url || siteInfo.url),
-      'Project Id': chalk.yellowBright(siteInfo.id),
+      'Admin URL': styleText('magentaBright', siteInfo.admin_url),
+      'Project URL': styleText('cyanBright', siteInfo.ssl_url || siteInfo.url),
+      'Project Id': styleText('yellowBright', siteInfo.id),
     }),
   )
   log()

@@ -36,7 +36,7 @@ vi.mock('../../../../src/utils/command-helpers.js', () => {
   return {
     log,
     logAndThrowError,
-    chalk: { underline: (text: string) => text },
+    styleText: (_format: unknown, text: string) => text,
     version: '1.0.0',
   }
 })

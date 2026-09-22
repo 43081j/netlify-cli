@@ -20,7 +20,7 @@ import { getAgent } from '../lib/http-agent.js'
 import {
   NETLIFY_CYAN,
   USER_AGENT,
-  chalk,
+  styleText,
   logAndThrowError,
   logJson,
   exit,
@@ -137,7 +137,7 @@ async function selectWorkspace(project: Project, filter?: string): Promise<strin
 
   if (!selected) {
     log()
-    log(chalk.cyan(`We've detected multiple projects inside your repository`))
+    log(styleText('cyan', `We've detected multiple projects inside your repository`))
 
     if (isCI) {
       throw new Error(
@@ -159,9 +159,7 @@ async function selectWorkspace(project: Project, filter?: string): Promise<strin
         (project.workspace?.packages || [])
           .filter((pkg) => pkg.path.includes(input))
           .map((pkg) => ({
-            name: `${pkg.name ? `${chalk.bold(pkg.name)}  ` : ''}${pkg.path}  ${chalk.dim(
-              `--filter ${pkg.name || pkg.path}`,
-            )}`,
+            name: `${pkg.name ? `${styleText('bold', pkg.name)}  ` : ''}${pkg.path}  ${styleText('dim', `--filter ${pkg.name || pkg.path}`)}`,
             value: pkg.path,
           })),
     })
@@ -374,7 +372,7 @@ export default class BaseCommand extends Command {
 
         if (description) {
           const pad = Math.max(termWidth + HELP_SEPARATOR_WIDTH - (isCommand ? 2 : 0), term.length + 2)
-          const fullText = `${bang}${term.padEnd(pad)}${chalk.grey(description)}`
+          const fullText = `${bang}${term.padEnd(pad)}${styleText('grey', description)}`
           return helper.wrap(fullText, helpWidth - HELP_INDENT_WIDTH, pad + (isCommand ? 2 : 0))
         }
 
@@ -391,18 +389,18 @@ export default class BaseCommand extends Command {
 
       // on the parent help command the version should be displayed
       if (this.name() === 'netlify') {
-        output = [...output, chalk.bold('VERSION'), formatHelpList([formatItem(USER_AGENT)]), '']
+        output = [...output, styleText('bold', 'VERSION'), formatHelpList([formatItem(USER_AGENT)]), '']
       }
 
       // Usage
-      output = [...output, chalk.bold('USAGE'), helper.commandUsage(command), '']
+      output = [...output, styleText('bold', 'USAGE'), helper.commandUsage(command), '']
 
       // Arguments
       const argumentList = helper
         .visibleArguments(command)
         .map((argument) => formatItem(helper.argumentTerm(argument), helper.argumentDescription(argument)))
       if (argumentList.length !== 0) {
-        output = [...output, chalk.bold('ARGUMENTS'), formatHelpList(argumentList), '']
+        output = [...output, styleText('bold', 'ARGUMENTS'), formatHelpList(argumentList), '']
       }
 
       if (command.#noBaseOptions === false) {
@@ -412,13 +410,13 @@ export default class BaseCommand extends Command {
           .sort(sortOptions)
           .map((option) => formatItem(helper.optionTerm(option), helper.optionDescription(option)))
         if (optionList.length !== 0) {
-          output = [...output, chalk.bold('OPTIONS'), formatHelpList(optionList), '']
+          output = [...output, styleText('bold', 'OPTIONS'), formatHelpList(optionList), '']
         }
       }
 
       // Description
       if (commandDescription.length !== 0) {
-        output = [...output, chalk.bold('DESCRIPTION'), formatHelpList(commandDescription), '']
+        output = [...output, styleText('bold', 'DESCRIPTION'), formatHelpList(commandDescription), '']
       }
 
       // Aliases
@@ -427,13 +425,13 @@ export default class BaseCommand extends Command {
       if (command._aliases.length !== 0) {
         // @ts-expect-error TS(2551) FIXME: Property '_aliases' does not exist on type 'Comman... Remove this comment to see the full error message
         const aliases = command._aliases.map((alias) => formatItem(`${parentCommand.name()} ${alias}`, null, true))
-        output = [...output, chalk.bold('ALIASES'), formatHelpList(aliases), '']
+        output = [...output, styleText('bold', 'ALIASES'), formatHelpList(aliases), '']
       }
 
       if (command.examples.length !== 0) {
         output = [
           ...output,
-          chalk.bold('EXAMPLES'),
+          styleText('bold', 'EXAMPLES'),
           formatHelpList(command.examples.map((example) => `${HELP_$} ${example}`)),
           '',
         ]
@@ -443,7 +441,7 @@ export default class BaseCommand extends Command {
         formatItem(cmd.name(), helper.subcommandDescription(cmd).split('\n')[0], true),
       )
       if (commandList.length !== 0) {
-        output = [...output, chalk.bold('COMMANDS'), formatHelpList(commandList), '']
+        output = [...output, styleText('bold', 'COMMANDS'), formatHelpList(commandList), '']
       }
 
       return [...output, ''].join('\n')
@@ -487,11 +485,7 @@ export default class BaseCommand extends Command {
     }
     if (!isInteractive()) {
       return logAndThrowError(
-        `Authentication required. NETLIFY_AUTH_TOKEN is not set and ${chalk.cyanBright(
-          '`netlify status`',
-        )} also informs us that you need to use ${chalk.cyanBright(
-          '`netlify login --request <message>`',
-        )} as a next step.`,
+        `Authentication required. NETLIFY_AUTH_TOKEN is not set and ${styleText('cyanBright', '`netlify status`')} also informs us that you need to use ${styleText('cyanBright', '`netlify login --request <message>`')} as a next step.`,
       )
     }
     const accessToken = await this.expensivelyAuthenticate()
@@ -547,7 +541,7 @@ export default class BaseCommand extends Command {
     }
 
     log()
-    log(`To request authorization from a human, run: ${chalk.cyanBright('netlify login --request "<msg>"')}`)
+    log(`To request authorization from a human, run: ${styleText('cyanBright', 'netlify login --request "<msg>"')}`)
     log()
 
     const accessToken = await pollForToken({
@@ -573,11 +567,11 @@ export default class BaseCommand extends Command {
 
     // Log success
     log()
-    log(chalk.greenBright('You are now logged into your Netlify account!'))
+    log(styleText('greenBright', 'You are now logged into your Netlify account!'))
     log()
-    log(`Run ${chalk.cyanBright('netlify status')} for account details`)
+    log(`Run ${styleText('cyanBright', 'netlify status')} for account details`)
     log()
-    log(`To see all available commands run: ${chalk.cyanBright('netlify help')}`)
+    log(`To see all available commands run: ${styleText('cyanBright', 'netlify help')}`)
     log()
     return accessToken
   }

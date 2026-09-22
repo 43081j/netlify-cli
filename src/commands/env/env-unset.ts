@@ -1,6 +1,6 @@
 import { OptionValues } from 'commander'
 
-import { chalk, log, logJson } from '../../utils/command-helpers.js'
+import { styleText, log, logJson } from '../../utils/command-helpers.js'
 import { SUPPORTED_CONTEXTS, translateFromEnvelopeToMongo } from '../../utils/env/index.js'
 import { promptOverwriteEnvVariable } from '../../utils/prompts/env-unset-prompts.js'
 import BaseCommand from '../base-command.js'
@@ -89,6 +89,8 @@ export const envUnset = async (key: string, options: OptionValues, command: Base
   }
 
   const contextType = SUPPORTED_CONTEXTS.includes(context || 'all') ? 'context' : 'branch'
-  log(`Unset environment variable ${chalk.yellow(key)} in the ${chalk.magenta(context || 'all')} ${contextType}`)
+  log(
+    `Unset environment variable ${styleText('yellow', key)} in the ${styleText('magenta', context || 'all')} ${contextType}`,
+  )
   log(`Changes will require a redeploy to take effect on any deployed versions of your project.`)
 }

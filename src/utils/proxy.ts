@@ -48,7 +48,7 @@ import {
   NETLIFYDEVLOG,
   NETLIFYDEVWARN,
   type NormalizedCachedConfigConfig,
-  chalk,
+  styleText,
   log,
   logError,
   warn,
@@ -302,7 +302,7 @@ const serveRedirect = async function ({
     } else {
       log(
         NETLIFYDEVWARN,
-        `Could not sign redirect because environment variable ${chalk.yellow(match.signingSecret)} is not set`,
+        `Could not sign redirect because environment variable ${styleText('yellow', match.signingSecret)} is not set`,
       )
     }
   }

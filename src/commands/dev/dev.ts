@@ -13,7 +13,7 @@ import {
   NETLIFYDEVLOG,
   NETLIFYDEVWARN,
   type NormalizedCachedConfigConfig,
-  chalk,
+  styleText,
   log,
   normalizeConfig,
   netlifyCommand,
@@ -58,10 +58,10 @@ const handleLiveTunnel = async ({
     const customSlug = typeof live === 'string' && live.length !== 0 ? live : undefined
     const slug = getLiveTunnelSlug(state, customSlug)
 
-    let message = `${NETLIFYDEVWARN} Creating live URL with ID ${chalk.yellow(slug)}`
+    let message = `${NETLIFYDEVWARN} Creating live URL with ID ${styleText('yellow', slug)}`
 
     if (!customSlug) {
-      message += ` (to generate a custom URL, use ${chalk.magenta('--live=<subdomain>')})`
+      message += ` (to generate a custom URL, use ${styleText('magenta', '--live=<subdomain>')})`
     }
 
     log(message)
@@ -124,9 +124,7 @@ export const dev = async (options: OptionValues, command: BaseCommand) => {
           case LINKED_NEW_SITE_EXIT_CODE:
           // fallthrough
           case LINKED_EXISTING_SITE_EXIT_CODE:
-            return `${defaultMessage !== '' ? `${defaultMessage}\n` : ''}You can run ${chalk.cyanBright.bold(
-              `${netlifyCommand()} dev`,
-            )} again to start the local development server.`
+            return `${defaultMessage !== '' ? `${defaultMessage}\n` : ''}You can run ${styleText(['cyanBright', 'bold'], `${netlifyCommand()} dev`)} again to start the local development server.`
         }
       },
       exitAfterConfiguringRepo: true,
@@ -143,7 +141,7 @@ export const dev = async (options: OptionValues, command: BaseCommand) => {
 
   if (!(options.offline || options.offlineEnv)) {
     env = await getEnvelopeEnv({ api, context: options.context, env, siteInfo })
-    log(`${NETLIFYDEVLOG} Injecting environment variable values for ${chalk.yellow('all scopes')}`)
+    log(`${NETLIFYDEVLOG} Injecting environment variable values for ${styleText('yellow', 'all scopes')}`)
   }
 
   env = await getDotEnvVariables({ devConfig, env, site })
@@ -195,7 +193,7 @@ export const dev = async (options: OptionValues, command: BaseCommand) => {
     runBeforeProcessExit(() => programmaticNetlifyDev.stop())
   }
 
-  await promptEditorHelper({ chalk, config, log, NETLIFYDEVLOG, repositoryRoot, state })
+  await promptEditorHelper({ config, log, NETLIFYDEVLOG, repositoryRoot, state })
 
   let settings: ServerSettings
   try {

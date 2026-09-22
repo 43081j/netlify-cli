@@ -16,7 +16,7 @@ import {
   NETLIFYDEVERR,
   NETLIFYDEVLOG,
   NETLIFYDEVWARN,
-  chalk,
+  styleText,
   exit,
   log,
   normalizeConfig,
@@ -53,7 +53,7 @@ export const serve = async (options: OptionValues, command: BaseCommand) => {
 
   if (!options.offline) {
     env = await getEnvelopeEnv({ api, context: options.context, env, siteInfo })
-    log(`${NETLIFYDEVLOG} Injecting environment variable values for ${chalk.yellow('all scopes')}`)
+    log(`${NETLIFYDEVLOG} Injecting environment variable values for ${styleText('yellow', 'all scopes')}`)
   }
 
   env = await getDotEnvVariables({ devConfig, env, site })
@@ -92,7 +92,7 @@ export const serve = async (options: OptionValues, command: BaseCommand) => {
   }
 
   injectEnvVariables(env)
-  await promptEditorHelper({ chalk, config, log, NETLIFYDEVLOG, repositoryRoot, state })
+  await promptEditorHelper({ config, log, NETLIFYDEVLOG, repositoryRoot, state })
 
   if (!site.root) {
     throw new Error('Site root not found')

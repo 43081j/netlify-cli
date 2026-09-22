@@ -1,5 +1,5 @@
 import BaseCommand from '../../commands/base-command.js'
-import { chalk, log } from '../command-helpers.js'
+import { styleText, log } from '../command-helpers.js'
 import type { RepoData } from '../get-repo-data.js'
 
 import { configGithub } from './config-github.js'
@@ -7,14 +7,14 @@ import configManual from './config-manual.js'
 
 const logSuccess = ({ provider }: RepoData): void => {
   log()
-  log(chalk.greenBright.bold.underline(`Success! Netlify CI/CD Configured!`))
+  log(styleText(['greenBright', 'bold', 'underline'], `Success! Netlify CI/CD Configured!`))
   log()
   log(`This project is now configured to automatically deploy from ${provider} branches & pull requests`)
   log()
   log(`Next steps:
 
-  ${chalk.cyanBright.bold('git push')}       Push to your git repository to trigger new project builds
-  ${chalk.cyanBright.bold('netlify open')}   Open the Netlify admin URL of your project
+  ${styleText(['cyanBright', 'bold'], 'git push')}       Push to your git repository to trigger new project builds
+  ${styleText(['cyanBright', 'bold'], 'netlify open')}   Open the Netlify admin URL of your project
   `)
 }
 

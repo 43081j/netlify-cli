@@ -1,7 +1,7 @@
 import { readdir, rm } from 'fs/promises'
 import { join } from 'path'
 
-import { chalk, log, logJson, netlifyCommand } from '../../utils/command-helpers.js'
+import { styleText, log, logJson, netlifyCommand } from '../../utils/command-helpers.js'
 import BaseCommand from '../base-command.js'
 import { localAppliedMigrations, remoteAppliedMigrations } from './util/applied-migrations.js'
 import { connectToDatabase } from './util/db-connection.js'
@@ -76,7 +76,7 @@ const resetAgainstBranch = async (branch: string, json: boolean, command: BaseCo
 
   if (!json) {
     log(
-      `Removing local migration files that have not been applied to database branch ${chalk.bold(branch)}. ` +
+      `Removing local migration files that have not been applied to database branch ${styleText('bold', branch)}. ` +
         'Files that are already applied to the branch are kept untouched.',
     )
   }

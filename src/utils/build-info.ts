@@ -4,7 +4,7 @@ import fuzzy from 'fuzzy'
 import inquirer from 'inquirer'
 
 import type BaseCommand from '../commands/base-command.js'
-import { chalk, log } from './command-helpers.js'
+import { styleText, log } from './command-helpers.js'
 import type { DefaultConfig } from '../lib/build.js'
 
 /**
@@ -30,7 +30,7 @@ const formatSettingsArrForInquirer = function (settings: Settings[], type = 'dev
   return settings.map((setting) => {
     const cmd = type === 'dev' ? setting.devCommand : setting.buildCommand
     return {
-      name: `[${chalk.yellow(setting.framework.name)}] '${cmd}'`,
+      name: `[${styleText('yellow', setting.framework.name)}] '${cmd}'`,
       value: { ...setting, commands: [cmd] },
       short: `${setting.name}-${cmd}`,
     }

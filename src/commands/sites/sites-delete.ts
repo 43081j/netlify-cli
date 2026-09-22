@@ -1,7 +1,7 @@
 import type { OptionValues } from 'commander'
 import inquirer from 'inquirer'
 
-import { chalk, logAndThrowError, exit, log, type APIError } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, exit, log, type APIError } from '../../utils/command-helpers.js'
 import type BaseCommand from '../base-command.js'
 
 export const sitesDelete = async (siteId: string, options: OptionValues, command: BaseCommand) => {
@@ -28,11 +28,13 @@ export const sitesDelete = async (siteId: string, options: OptionValues, command
 
   /* Verify the user wants to delete the project */
   if (noForce) {
-    log(`${chalk.redBright('Warning')}: You are about to permanently delete "${chalk.bold(siteData.name)}"`)
+    log(
+      `${styleText('redBright', 'Warning')}: You are about to permanently delete "${styleText('bold', siteData.name ?? '')}"`,
+    )
     log(`         Verify this project ID "${siteId}" supplied is correct and proceed.`)
     log('         To skip this prompt, pass a --force flag to the delete command')
     log()
-    log(chalk.bold('Be careful here. There is no undo!'))
+    log(styleText('bold', 'Be careful here. There is no undo!'))
     log()
     const { wantsToDelete } = await inquirer.prompt({
       type: 'confirm',
@@ -49,7 +51,7 @@ export const sitesDelete = async (siteId: string, options: OptionValues, command
   /* Validation logic if siteId passed in does not match current project ID */
   if (noForce && cwdSiteId && cwdSiteId !== siteId) {
     log(
-      `${chalk.redBright('Warning')}: The project ID supplied does not match the current working directory project ID`,
+      `${styleText('redBright', 'Warning')}: The project ID supplied does not match the current working directory project ID`,
     )
     log()
     log(`Supplied:       "${siteId}"`)

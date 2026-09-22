@@ -96,9 +96,16 @@ export default tseslint.config(
             },
 
             {
-              name: 'chalk',
+              name: 'node:util',
+              importNames: ['styleText'],
               message:
-                'Use the safe chalk import that handles colors for json output: `import { chalk } from "src/utils/command-helpers.js"`',
+                'Use the safe styleText export that disables colors for json output: `import { styleText } from "src/utils/command-helpers.js"`',
+            },
+            {
+              name: 'util',
+              importNames: ['styleText'],
+              message:
+                'Use the safe styleText export that disables colors for json output: `import { styleText } from "src/utils/command-helpers.js"`',
             },
           ],
         },

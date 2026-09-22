@@ -13,7 +13,8 @@ import {
   NETLIFYDEVLOG,
   NETLIFYDEVWARN,
   nonNullable,
-  chalk,
+  styleText,
+  colorFn,
   log,
   warn,
   isNodeError,
@@ -453,19 +454,21 @@ export class EdgeFunctionsRegistryImpl implements EdgeFunctionsRegistry {
     event: EdgeFunctionEvent,
     { buildError, functionName, warnings = [] }: { buildError?: Error; functionName?: string; warnings?: string[] },
   ) {
-    const subject = functionName ? `edge function ${chalk.yellow(this.getDisplayName(functionName))}` : 'edge functions'
+    const subject = functionName
+      ? `edge function ${styleText('yellow', this.getDisplayName(functionName))}`
+      : 'edge functions'
     const warningsText =
       warnings.length === 0 ? '' : ` with warnings:\n${warnings.map((warning) => `  - ${warning}`).join('\n')}`
 
     if (event === 'buildError') {
-      log(`${NETLIFYDEVERR} ${chalk.red('Failed to load')} ${subject}: ${buildError}`)
+      log(`${NETLIFYDEVERR} ${styleText('red', 'Failed to load')} ${subject}: ${buildError}`)
 
       return
     }
 
     if (event === 'loaded') {
       const icon = warningsText ? NETLIFYDEVWARN : NETLIFYDEVLOG
-      const color = warningsText ? chalk.yellow : chalk.green
+      const color = warningsText ? colorFn('yellow') : colorFn('green')
 
       log(`${icon} ${color('Loaded')} ${subject}${warningsText}`)
 
@@ -474,7 +477,7 @@ export class EdgeFunctionsRegistryImpl implements EdgeFunctionsRegistry {
 
     if (event === 'reloaded') {
       const icon = warningsText ? NETLIFYDEVWARN : NETLIFYDEVLOG
-      const color = warningsText ? chalk.yellow : chalk.green
+      const color = warningsText ? colorFn('yellow') : colorFn('green')
 
       log(`${icon} ${color('Reloaded')} ${subject}${warningsText}`)
 
@@ -482,13 +485,13 @@ export class EdgeFunctionsRegistryImpl implements EdgeFunctionsRegistry {
     }
 
     if (event === 'reloading') {
-      log(`${NETLIFYDEVLOG} ${chalk.magenta('Reloading')} ${subject}...`)
+      log(`${NETLIFYDEVLOG} ${styleText('magenta', 'Reloading')} ${subject}...`)
 
       return
     }
 
     if (event === 'removed') {
-      log(`${NETLIFYDEVLOG} ${chalk.magenta('Removed')} ${subject}`)
+      log(`${NETLIFYDEVLOG} ${styleText('magenta', 'Removed')} ${subject}`)
     }
   }
 

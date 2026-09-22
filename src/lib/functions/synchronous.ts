@@ -6,7 +6,7 @@ import express from 'express'
 import { isReadableStream as baseIsReadableStream } from 'is-stream'
 import type { LambdaEvent } from 'lambda-local'
 
-import { chalk, logPadded, NETLIFYDEVERR } from '../../utils/command-helpers.js'
+import { styleText, logPadded, NETLIFYDEVERR } from '../../utils/command-helpers.js'
 
 import { warnIfAwsSdkError } from './utils.js'
 import type { InvocationError } from './netlify-function.js'
@@ -42,9 +42,9 @@ export const handleSynchronousFunction = async function ({
     const error = getNormalizedError(invocationError)
 
     logPadded(
-      `${NETLIFYDEVERR} Function ${chalk.yellow(functionName)} has returned an error: ${
+      `${NETLIFYDEVERR} Function ${styleText('yellow', functionName)} has returned an error: ${
         error.errorMessage
-      }\n${chalk.dim(error.stackTrace.join('\n'))}`,
+      }\n${styleText('dim', error.stackTrace.join('\n'))}`,
     )
 
     await handleErr(invocationError, request, response)
@@ -79,7 +79,7 @@ export const handleSynchronousFunction = async function ({
     const normalizedError = getNormalizedError(wrappedHeadersError)
 
     logPadded(
-      `${NETLIFYDEVERR} Failed to set header in function ${chalk.yellow(functionName)}: ${
+      `${NETLIFYDEVERR} Failed to set header in function ${styleText('yellow', functionName)}: ${
         normalizedError.errorMessage
       }`,
     )

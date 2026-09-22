@@ -1,6 +1,6 @@
 import type { NetlifyAPI } from '@netlify/api'
 
-import { chalk, log, logAndThrowError, netlifyCommand } from '../../utils/command-helpers.js'
+import { styleText, log, logAndThrowError, netlifyCommand } from '../../utils/command-helpers.js'
 import type BaseCommand from '../base-command.js'
 
 import {
@@ -103,7 +103,7 @@ const printHeader = (sources: Source[], timeDescription: string, isFollow: boole
   const activeSources = sources.map((s) => SOURCE_TO_ENTRY_SOURCE[s])
   for (const source of activeSources) {
     const pad = INDICATOR_PAD[source] ?? ''
-    log(`  ${SOURCE_INDICATORS[source]}${pad}  ${chalk.dim(SOURCE_LABELS[source])}`)
+    log(`  ${SOURCE_INDICATORS[source]}${pad}  ${styleText('dim', SOURCE_LABELS[source])}`)
   }
   log('')
 }
@@ -195,7 +195,7 @@ export const logsCommand = async (options: LogsOptionValues, command: BaseComman
           ...(options.since ? [`--since ${options.since}`] : []),
           `--url https://${siteInfo.name}.netlify.app`,
         ].join(' ')
-        return logAndThrowError(`${message}\nTry running ${chalk.cyan(parts)}`)
+        return logAndThrowError(`${message}\nTry running ${styleText('cyan', parts)}`)
       }
       return logAndThrowError(message)
     }
@@ -411,7 +411,7 @@ export const runFollowMode = async ({
         onEntry,
         () => {
           if (!json) {
-            log(chalk.dim('Deploy stream closed.'))
+            log(styleText('dim', 'Deploy stream closed.'))
           }
         },
         { closeWhenIdleMs: finished ? DEPLOY_STREAM_IDLE_CLOSE_MS : undefined },

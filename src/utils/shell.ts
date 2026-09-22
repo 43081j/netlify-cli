@@ -6,7 +6,7 @@ import execa from 'execa'
 
 import { type Spinner } from '../lib/spinner.js'
 
-import { chalk, log, NETLIFYDEVERR, NETLIFYDEVWARN } from './command-helpers.js'
+import { styleText, log, NETLIFYDEVERR, NETLIFYDEVWARN } from './command-helpers.js'
 import { processOnExit } from './dev.js'
 
 const isErrnoException = (value: unknown): value is NodeJS.ErrnoException =>
@@ -165,9 +165,7 @@ export const runCommand = (
       isNonExistingCommandError({ command: commandWithoutArgs, error: result })
     ) {
       log(
-        `${NETLIFYDEVERR} Failed running command: ${command}. Please verify ${chalk.magenta(
-          `'${commandWithoutArgs}'`,
-        )} exists`,
+        `${NETLIFYDEVERR} Failed running command: ${command}. Please verify ${styleText('magenta', `'${commandWithoutArgs}'`)} exists`,
       )
     } else {
       const errorMessage = result.failed

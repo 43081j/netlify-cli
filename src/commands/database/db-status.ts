@@ -1,7 +1,7 @@
 import { readdir } from 'fs/promises'
 import { join } from 'path'
 
-import { chalk, log, logJson, netlifyCommand } from '../../utils/command-helpers.js'
+import { styleText, log, logJson, netlifyCommand } from '../../utils/command-helpers.js'
 import BaseCommand from '../base-command.js'
 import {
   type AppliedMigrationsFetcher,
@@ -47,7 +47,7 @@ interface ServerContext {
 const DOCS_URL = 'https://ntl.fyi/database'
 const NETLIFY_DATABASE_PACKAGE = '@netlify/database'
 
-const formatCommand = (suffix: string): string => chalk.cyanBright.bold(`${netlifyCommand()} ${suffix}`)
+const formatCommand = (suffix: string): string => styleText(['cyanBright', 'bold'], `${netlifyCommand()} ${suffix}`)
 
 const logConnectCommands = () => {
   secondary(`Run ${formatCommand('database connect')} to start an interactive database client`)
@@ -205,7 +205,7 @@ const fetchSiteDatabase = async (ctx: ServerContext): Promise<{ connectionString
 
 const renderList = (items: MigrationEntry[], indent = '  '): string => {
   if (items.length === 0) {
-    return chalk.dim(`${indent}(none)`)
+    return styleText('dim', `${indent}(none)`)
   }
   return items.map((m) => `${indent}• ${m.name}`).join('\n')
 }
@@ -237,7 +237,7 @@ const primary = (emoji: string, text: string): void => {
 }
 
 const secondary = (text: string): void => {
-  log(chalk.gray(`${INDENT}${text}`))
+  log(styleText('gray', `${INDENT}${text}`))
 }
 
 const renderPretty = (params: RenderParams) => {
@@ -254,8 +254,8 @@ const renderPretty = (params: RenderParams) => {
     adminUrl,
   } = params
 
-  log(chalk.bold('Netlify Database'))
-  log(chalk.gray('Managed Postgres databases that seamlessly integrate with the Netlify workflow'))
+  log(styleText('bold', 'Netlify Database'))
+  log(styleText('gray', 'Managed Postgres databases that seamlessly integrate with the Netlify workflow'))
   log('')
 
   if (enabled) {
@@ -265,16 +265,18 @@ const renderPretty = (params: RenderParams) => {
     }
   } else {
     primary(STATUS_WARN, 'Netlify Database is not enabled for this project')
-    secondary(`Install the ${chalk.bold(NETLIFY_DATABASE_PACKAGE)} package and deploy your site to automatically`)
+    secondary(
+      `Install the ${styleText('bold', NETLIFY_DATABASE_PACKAGE)} package and deploy your site to automatically`,
+    )
     secondary(`provision a database. Refer to ${DOCS_URL} for more information.`)
   }
   log('')
 
   if (packageInstalled) {
-    primary(STATUS_GOOD, `The ${chalk.bold(NETLIFY_DATABASE_PACKAGE)} package is installed`)
+    primary(STATUS_GOOD, `The ${styleText('bold', NETLIFY_DATABASE_PACKAGE)} package is installed`)
     secondary(`For a full API reference, visit ${DOCS_URL}`)
   } else {
-    primary(STATUS_WARN, `The ${chalk.bold(NETLIFY_DATABASE_PACKAGE)} package is not installed`)
+    primary(STATUS_WARN, `The ${styleText('bold', NETLIFY_DATABASE_PACKAGE)} package is not installed`)
     secondary(`Install it with \`npm install ${NETLIFY_DATABASE_PACKAGE}\``)
     secondary(`Refer to ${DOCS_URL} for more information`)
   }
@@ -306,31 +308,39 @@ const renderPretty = (params: RenderParams) => {
   }
 
   log('')
-  log(chalk.bold('Migrations'))
-  log(chalk.gray('Database migrations managed by Netlify'))
+  log(styleText('bold', 'Migrations'))
+  log(styleText('gray', 'Database migrations managed by Netlify'))
   log('')
 
   log('')
   const displayPath = relativeToProject(projectRoot, migrationsDirectory)
-  log(`  ${STATUS_INFO} ${chalk.bold('Migrations directory')}`)
-  log(chalk.gray(`${INDENT}Migration files in this directory are automatically applied when deploying to Netlify.`))
+  log(`  ${STATUS_INFO} ${styleText('bold', 'Migrations directory')}`)
+  log(
+    styleText(
+      'gray',
+      `${INDENT}Migration files in this directory are automatically applied when deploying to Netlify.`,
+    ),
+  )
   log(`${INDENT}${displayPath}`)
 
   if (status.missingOnDisk.length > 0 || status.outOfOrder.length > 0) {
     log('')
-    log(chalk.bold.yellow('Issues'))
+    log(styleText(['bold', 'yellow'], 'Issues'))
     if (status.missingOnDisk.length > 0) {
-      log(`  Applied but missing on disk: ${status.missingOnDisk.map((m) => chalk.red(m.name)).join(', ')}`)
+      log(`  Applied but missing on disk: ${status.missingOnDisk.map((m) => styleText('red', m.name)).join(', ')}`)
     }
     if (status.outOfOrder.length > 0) {
       log(
         `  Out of order: ${status.outOfOrder
-          .map((m) => chalk.red(`${m.name} (version ${String(m.version)} <= max applied ${String(m.maxApplied)})`))
+          .map((m) =>
+            styleText('red', `${m.name} (version ${String(m.version)} <= max applied ${String(m.maxApplied)})`),
+          )
           .join(', ')}`,
       )
       log('')
       log(
-        chalk.gray(
+        styleText(
+          'gray',
           `Run ${formatCommand(
             'database migrations reset',
           )} to delete these local-only migrations, then generate them again with a higher prefix.`,
@@ -341,9 +351,10 @@ const renderPretty = (params: RenderParams) => {
 
   const appliedEmoji = status.applied.length > 0 ? STATUS_GOOD : STATUS_NONE
   log('')
-  log(`  ${appliedEmoji} ${chalk.bold(`Applied migrations (${String(status.applied.length)})`)}`)
+  log(`  ${appliedEmoji} ${styleText('bold', `Applied migrations (${String(status.applied.length)})`)}`)
   log(
-    chalk.gray(
+    styleText(
+      'gray',
       `${INDENT}These migrations have been applied and cannot be edited or deleted. Any changes to the schema must involve a new migration.`,
     ),
   )
@@ -351,9 +362,10 @@ const renderPretty = (params: RenderParams) => {
 
   log('')
   const pendingEmoji = status.pending.length === 0 ? STATUS_GOOD : STATUS_WARN
-  log(`  ${pendingEmoji} ${chalk.bold(`Pending migrations (${String(status.pending.length)})`)}`)
+  log(`  ${pendingEmoji} ${styleText('bold', `Pending migrations (${String(status.pending.length)})`)}`)
   log(
-    chalk.gray(
+    styleText(
+      'gray',
       `${INDENT}These migrations are defined locally but haven't been applied, and you can change them or delete them.`,
     ),
   )
@@ -362,9 +374,14 @@ const renderPretty = (params: RenderParams) => {
     const canApplyLocally = isLocal && !hasUrlOverride
     log('')
     if (canApplyLocally) {
-      log(chalk.gray(`${INDENT}Run ${formatCommand('database migrations apply')} to apply them to the local database.`))
+      log(
+        styleText(
+          'gray',
+          `${INDENT}Run ${formatCommand('database migrations apply')} to apply them to the local database.`,
+        ),
+      )
     } else {
-      log(chalk.gray(`${INDENT}Deploy these files to apply the migrations.`))
+      log(styleText('gray', `${INDENT}Deploy these files to apply the migrations.`))
     }
   }
 }

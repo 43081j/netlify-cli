@@ -1,7 +1,7 @@
 import type { OptionValues } from 'commander'
 import inquirer from 'inquirer'
 
-import { chalk, logAndThrowError, log, logJson } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, log, logJson } from '../../utils/command-helpers.js'
 import { startSpinner, stopSpinner } from '../../lib/spinner.js'
 import type BaseCommand from '../base-command.js'
 import type { AgentRunner } from './types.js'
@@ -136,29 +136,28 @@ export const agentsCreate = async (promptArg: string, options: AgentCreateOption
       return agentRunner
     }
 
-    log(`${chalk.green('✓')} Agent task created successfully!`)
+    log(`${styleText('green', '✓')} Agent task created successfully!`)
     log(``)
-    log(chalk.bold('Details:'))
-    log(`  Task ID: ${chalk.cyan(agentRunner.id)}`)
-    log(`  Prompt: ${chalk.dim(finalPrompt)}`)
-    log(`  Agent: ${chalk.cyan(getAgentName(agent))}${model ? ` (${model})` : ''}`)
+    log(styleText('bold', 'Details:'))
+    log(`  Task ID: ${styleText('cyan', agentRunner.id)}`)
+    log(`  Prompt: ${styleText('dim', finalPrompt)}`)
+    log(`  Agent: ${styleText('cyan', getAgentName(agent))}${model ? ` (${model})` : ''}`)
     if (isGitBased && branch) {
-      log(`  Branch: ${chalk.cyan(branch)}`)
+      log(`  Branch: ${styleText('cyan', branch)}`)
     } else {
-      log(`  Base: ${chalk.cyan('Latest production deployment')}`)
+      log(`  Base: ${styleText('cyan', 'Latest production deployment')}`)
     }
     log(`  Status: ${formatStatus(agentRunner.state ?? 'new')}`)
     log(``)
-    log(chalk.bold('Monitor progress:'))
-    log(`  CLI: ${chalk.cyan(`netlify agents:show ${agentRunner.id}`)}`)
+    log(styleText('bold', 'Monitor progress:'))
+    log(`  CLI: ${styleText('cyan', `netlify agents:show ${agentRunner.id}`)}`)
     log(
-      `  View in browser: ${chalk.blue(
-        `https://app.netlify.com/projects/${siteInfo.name}/agent-runs/${agentRunner.id}`,
-      )}`,
+      `  View in browser: ${styleText('blue', `https://app.netlify.com/projects/${siteInfo.name}/agent-runs/${agentRunner.id}`)}`,
     )
     log(``)
     log(
-      chalk.dim(
+      styleText(
+        'dim',
         'Note: The agent task will run remotely on Netlify infrastructure and may take a few minutes to complete.',
       ),
     )

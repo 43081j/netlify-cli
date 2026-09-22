@@ -1,4 +1,4 @@
-import { chalk, warn } from '../../utils/command-helpers.js'
+import { styleText, warn } from '../../utils/command-helpers.js'
 import { MISSING_AWS_SDK_WARNING } from '../log.js'
 
 import type { InvocationError } from './netlify-function.js'
@@ -16,8 +16,9 @@ export const warnIfAwsSdkError = ({ error }: { error: Error | InvocationError | 
 }
 
 export const formatLambdaError = (err: Error | InvocationError): string =>
-  chalk.red(
+  styleText(
+    'red',
     `${'errorType' in err ? err.errorType : 'Error'}: ${'errorMessage' in err ? err.errorMessage : err.message}`,
   )
 
-export const styleFunctionName = (name: string): string => chalk.magenta(name)
+export const styleFunctionName = (name: string): string => styleText('magenta', name)

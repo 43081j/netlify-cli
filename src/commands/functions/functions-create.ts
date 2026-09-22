@@ -20,7 +20,7 @@ import {
   NETLIFYDEVERR,
   NETLIFYDEVLOG,
   NETLIFYDEVWARN,
-  chalk,
+  styleText,
   logAndThrowError,
   log,
 } from '../../utils/command-helpers.js'
@@ -293,14 +293,12 @@ const ensureEdgeFuncDirExists = function (command) {
 
   if (!fs.existsSync(functionsDir)) {
     log(
-      `${NETLIFYDEVLOG} Edge Functions directory ${chalk.magenta.inverse(
-        relFunctionsDir,
-      )} does not exist yet, creating it...`,
+      `${NETLIFYDEVLOG} Edge Functions directory ${styleText(['magenta', 'inverse'], relFunctionsDir)} does not exist yet, creating it...`,
     )
 
     fs.mkdirSync(functionsDir, { recursive: true })
 
-    log(`${NETLIFYDEVLOG} Edge Functions directory ${chalk.magenta.inverse(relFunctionsDir)} created.`)
+    log(`${NETLIFYDEVLOG} Edge Functions directory ${styleText(['magenta', 'inverse'], relFunctionsDir)} created.`)
   }
 
   return functionsDir
@@ -332,7 +330,7 @@ const promptFunctionsDirectory = async (command) => {
   ])
 
   try {
-    log(`${NETLIFYDEVLOG} updating project settings with ${chalk.magenta.inverse(functionsDir)}`)
+    log(`${NETLIFYDEVLOG} updating project settings with ${styleText(['magenta', 'inverse'], functionsDir)}`)
 
     await api.updateSite({
       siteId: site.id,
@@ -343,7 +341,9 @@ const promptFunctionsDirectory = async (command) => {
       },
     })
 
-    log(`${NETLIFYDEVLOG} functions directory ${chalk.magenta.inverse(functionsDir)} updated in project settings`)
+    log(
+      `${NETLIFYDEVLOG} functions directory ${styleText(['magenta', 'inverse'], functionsDir)} updated in project settings`,
+    )
   } catch {
     return logAndThrowError('Error updating project settings')
   }
@@ -364,14 +364,12 @@ const ensureFunctionDirExists = async function (command) {
 
   if (!fs.existsSync(functionsDirHolder)) {
     log(
-      `${NETLIFYDEVLOG} functions directory ${chalk.magenta.inverse(
-        relFunctionsDirHolder,
-      )} does not exist yet, creating it...`,
+      `${NETLIFYDEVLOG} functions directory ${styleText(['magenta', 'inverse'], relFunctionsDirHolder)} does not exist yet, creating it...`,
     )
 
     await mkdir(functionsDirHolder, { recursive: true })
 
-    log(`${NETLIFYDEVLOG} functions directory ${chalk.magenta.inverse(relFunctionsDirHolder)} created`)
+    log(`${NETLIFYDEVLOG} functions directory ${styleText(['magenta', 'inverse'], relFunctionsDirHolder)} created`)
   }
 
   return functionsDirHolder
@@ -542,7 +540,7 @@ const scaffoldFromTemplate = async function (command, options, argumentName, fun
 
     const name = await getNameFromArgs(argumentName, options, templateName)
 
-    log(`${NETLIFYDEVLOG} Creating function ${chalk.cyan.inverse(name)}`)
+    log(`${NETLIFYDEVLOG} Creating function ${styleText(['cyan', 'inverse'], name)}`)
     const functionPath = ensureFunctionPathIsOk(functionsDir, name)
 
     const vars = { name }
@@ -556,7 +554,7 @@ const scaffoldFromTemplate = async function (command, options, argumentName, fun
       const filename = path.basename(filePath)
 
       if (!omittedFromOutput.has(filename)) {
-        log(`${NETLIFYDEVLOG} ${chalk.greenBright('Created')} ${filePath}`)
+        log(`${NETLIFYDEVLOG} ${styleText('greenBright', 'Created')} ${filePath}`)
       }
 
       fs.chmodSync(path.resolve(filePath), TEMPLATE_PERMISSIONS)
@@ -583,7 +581,7 @@ const scaffoldFromTemplate = async function (command, options, argumentName, fun
     await handleOnComplete({ command, onComplete })
 
     log()
-    log(chalk.greenBright(`Function created!`))
+    log(styleText('greenBright', `Function created!`))
   }
 }
 
@@ -691,7 +689,7 @@ const installAddons = async function (command, functionAddons, fnPath) {
 
   // @ts-expect-error TS(7031) FIXME: Binding element 'addonDidInstall' implicitly has a... Remove this comment to see the full error message
   const arr = functionAddons.map(async ({ addonDidInstall, addonName }) => {
-    log(`${NETLIFYDEVLOG} installing addon: ${chalk.yellow.inverse(addonName)}`)
+    log(`${NETLIFYDEVLOG} installing addon: ${styleText(['yellow', 'inverse'], addonName)}`)
     try {
       const addonCreated = await createFunctionAddon({
         api,

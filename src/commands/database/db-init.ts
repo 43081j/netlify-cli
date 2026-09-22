@@ -5,7 +5,7 @@ import { join } from 'path'
 import { applyMigrations } from '@netlify/dev'
 import inquirer from 'inquirer'
 
-import { chalk, log, netlifyCommand } from '../../utils/command-helpers.js'
+import { styleText, log, netlifyCommand } from '../../utils/command-helpers.js'
 import { startSpinner, stopSpinner } from '../../lib/spinner.js'
 import { isInteractive } from '../../utils/scripted-commands.js'
 import BaseCommand from '../base-command.js'
@@ -41,15 +41,15 @@ type QueryStyle = 'raw' | 'drizzle'
 
 const sectionHeading = (title: string): void => {
   log('')
-  log(chalk.bold(title))
+  log(styleText('bold', title))
 }
 
 const info = (text: string): void => {
-  log(chalk.gray(text))
+  log(styleText('gray', text))
 }
 
 const success = (text: string): void => {
-  log(chalk.green(`✓ ${text}`))
+  log(styleText('green', `✓ ${text}`))
 }
 
 const carefullyWriteFile = async (filePath: string, data: string, projectRoot: string) => {
@@ -268,7 +268,7 @@ const applyAndQuery = async (
 const renderQueryBlock = (query: QueryResult): void => {
   info("We have data! Let's run a command that lets you run one-shot queries using SQL:")
   log('')
-  log(`  ${chalk.cyan(`$ ${netlifyCommand()} database connect --query "SELECT * FROM ${STARTER_TABLE}"`)}`)
+  log(`  ${styleText('cyan', `$ ${netlifyCommand()} database connect --query "SELECT * FROM ${STARTER_TABLE}"`)}`)
   log('')
 
   const formatted = formatQueryResult(query.fields, query.rows, query.rowCount, query.command)
@@ -282,40 +282,40 @@ const printNextSteps = (orm: QueryStyle, withStarter: boolean): void => {
   log('A few commands to try from here:')
   log('')
   log('  • Check the state of your database, including applied and pending migrations:')
-  log(`      ${chalk.cyan(`${netlifyCommand()} database status`)}`)
+  log(`      ${styleText('cyan', `${netlifyCommand()} database status`)}`)
   log('')
   log('  • Open an interactive Postgres REPL for querying and introspecting the database:')
-  log(`      ${chalk.cyan(`${netlifyCommand()} database connect`)}`)
+  log(`      ${styleText('cyan', `${netlifyCommand()} database connect`)}`)
   log('')
 
   if (withStarter) {
     log('  • Run a one-shot query:')
-    log(`      ${chalk.cyan(`${netlifyCommand()} database connect --query "SELECT * FROM ${STARTER_TABLE}"`)}`)
+    log(`      ${styleText('cyan', `${netlifyCommand()} database connect --query "SELECT * FROM ${STARTER_TABLE}"`)}`)
   } else if (orm === 'drizzle') {
     log('  • Define your tables in `db/schema.ts`, then generate a migration from them:')
-    log(`      ${chalk.cyan('npx drizzle-kit generate')}`)
+    log(`      ${styleText('cyan', 'npx drizzle-kit generate')}`)
   } else {
     log('  • Create your first migration:')
-    log(`      ${chalk.cyan(`${netlifyCommand()} database migrations new`)}`)
+    log(`      ${styleText('cyan', `${netlifyCommand()} database migrations new`)}`)
   }
   log('')
 
   const template = orm === 'drizzle' ? 'database-drizzle' : 'database'
   log(`  • Scaffold a function that queries the \`${STARTER_TABLE}\` table:`)
-  log(`      ${chalk.cyan(`${netlifyCommand()} functions:create --language typescript --template ${template}`)}`)
+  log(`      ${styleText('cyan', `${netlifyCommand()} functions:create --language typescript --template ${template}`)}`)
   log('')
 
   if (withStarter) {
     log('  • Wipe local data and restore the database to a blank state:')
-    log(`      ${chalk.cyan(`${netlifyCommand()} database reset`)}`)
+    log(`      ${styleText('cyan', `${netlifyCommand()} database reset`)}`)
     log('')
   }
 
   log('  • Deploy your project (and its migrations) to Netlify:')
-  log(`      ${chalk.cyan(`${netlifyCommand()} deploy`)}`)
+  log(`      ${styleText('cyan', `${netlifyCommand()} deploy`)}`)
 
   log('')
-  log(`To explore more of Netlify Database, visit ${chalk.cyan(DOCS_URL)}.`)
+  log(`To explore more of Netlify Database, visit ${styleText('cyan', DOCS_URL)}.`)
 }
 
 export const initDatabase = async (options: DatabaseInitOptions, command: BaseCommand) => {
@@ -327,7 +327,7 @@ export const initDatabase = async (options: DatabaseInitOptions, command: BaseCo
   const interactive = isInteractive() && !yes
   const pm = getPackageManager(command)
 
-  log(chalk.bold('Netlify Database'))
+  log(styleText('bold', 'Netlify Database'))
   info('A fully managed Postgres database built into the Netlify platform. We automatically handle provisioning,')
   info('migrations, and branching for you, so you can focus on building your application.')
 
@@ -336,20 +336,16 @@ export const initDatabase = async (options: DatabaseInitOptions, command: BaseCo
   if (existingMigrations.length > 0) {
     log('')
     info(
-      `It looks like you already have migrations set up in ${chalk.bold(
-        relativeToProject(projectRoot, migrationsDirectory),
-      )}.`,
+      `It looks like you already have migrations set up in ${styleText('bold', relativeToProject(projectRoot, migrationsDirectory))}.`,
     )
-    info(`Run ${chalk.cyan(`${netlifyCommand()} database status`)} to see their current state.`)
+    info(`Run ${styleText('cyan', `${netlifyCommand()} database status`)} to see their current state.`)
     return
   }
 
   log('')
   info('Database migrations are ordered SQL files that define and evolve your schema.')
   info(
-    `Netlify manages and applies migrations for you. Read more at ${chalk.cyan(
-      'https://ntl.fyi/database-migrations',
-    )}.`,
+    `Netlify manages and applies migrations for you. Read more at ${styleText('cyan', 'https://ntl.fyi/database-migrations')}.`,
   )
   info('')
   info('Do you want to write SQL queries directly in your application and author migrations yourself, or')

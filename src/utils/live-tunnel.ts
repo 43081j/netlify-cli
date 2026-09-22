@@ -6,7 +6,7 @@ import pWaitFor from 'p-wait-for'
 import { fetchLatestVersion, shouldFetchLatestVersion } from '../lib/exec-fetcher.js'
 import { getPathInHome } from '../lib/settings.js'
 
-import { NETLIFYDEVERR, NETLIFYDEVLOG, chalk, exit, log } from './command-helpers.js'
+import { NETLIFYDEVERR, NETLIFYDEVLOG, styleText, exit, log } from './command-helpers.js'
 import execa from './execa.js'
 import type { LocalState } from './types.js'
 
@@ -118,17 +118,13 @@ export const startLiveTunnel = async ({
 }) => {
   if (!siteId) {
     console.error(
-      `${NETLIFYDEVERR} Error: no project ID defined, did you forget to run ${chalk.yellow(
-        'netlify init',
-      )} or ${chalk.yellow('netlify link')}?`,
+      `${NETLIFYDEVERR} Error: no project ID defined, did you forget to run ${styleText('yellow', 'netlify init')} or ${styleText('yellow', 'netlify link')}?`,
     )
     return exit(1)
   }
   if (!netlifyApiToken) {
     console.error(
-      `${NETLIFYDEVERR} Error: no Netlify auth token defined, did you forget to run ${chalk.yellow(
-        'netlify login',
-      )} or define 'NETLIFY_AUTH_TOKEN'?`,
+      `${NETLIFYDEVERR} Error: no Netlify auth token defined, did you forget to run ${styleText('yellow', 'netlify login')} or define 'NETLIFY_AUTH_TOKEN'?`,
     )
     return exit(1)
   }

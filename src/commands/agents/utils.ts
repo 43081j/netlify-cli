@@ -1,5 +1,5 @@
 import { AVAILABLE_AGENTS, STATUS_COLORS } from './constants.js'
-import { chalk } from '../../utils/command-helpers.js'
+import { colorFn } from '../../utils/command-helpers.js'
 
 export const truncateText = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text
@@ -30,8 +30,8 @@ export const formatDuration = (startTime: string, endTime?: string): string => {
 }
 
 export const formatStatus = (status: string): string => {
-  const colorFn = status in STATUS_COLORS ? STATUS_COLORS[status as keyof typeof STATUS_COLORS] : chalk.white
-  return colorFn(status.toUpperCase())
+  const color = status in STATUS_COLORS ? STATUS_COLORS[status as keyof typeof STATUS_COLORS] : colorFn('white')
+  return color(status.toUpperCase())
 }
 
 export const validatePrompt = (input: string): boolean | string => {

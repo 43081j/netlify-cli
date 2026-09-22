@@ -29,7 +29,7 @@ import {
   NETLIFY_CYAN_HEX,
   NETLIFYDEVERR,
   NETLIFYDEVLOG,
-  chalk,
+  styleText,
   logAndThrowError,
   exit,
   getToken,
@@ -855,7 +855,7 @@ const printResults = ({
 
   log('')
   // Note: this is leakily mimicking the @netlify/build heading style
-  log(chalk.cyanBright.bold(`🚀 Deploy complete\n${'─'.repeat(64)}`))
+  log(styleText(['cyanBright', 'bold'], `🚀 Deploy complete\n${'─'.repeat(64)}`))
 
   // Json response for piping commands
   if (json) {
@@ -920,7 +920,7 @@ const printResults = ({
     if (!deployToProduction) {
       log()
       log('If everything looks good on your draft URL, deploy it to your main project URL with the --prod flag:')
-      log(chalk.cyanBright.bold(`netlify deploy${runBuildCommand ? '' : ' --no-build'} --prod`))
+      log(styleText(['cyanBright', 'bold'], `netlify deploy${runBuildCommand ? '' : ' --no-build'} --prod`))
       log()
     }
   }
@@ -970,7 +970,7 @@ const prepAndRunDeploy = async ({
 
   log('')
   // Note: this is leakily mimicking the @netlify/build heading style
-  log(chalk.cyanBright.bold(`Deploying to Netlify\n${'─'.repeat(64)}`))
+  log(styleText(['cyanBright', 'bold'], `Deploying to Netlify\n${'─'.repeat(64)}`))
 
   log('')
   log(
@@ -1189,8 +1189,8 @@ const anonymousDeploy = async (options: DeployOptionValues, command: BaseCommand
         }${hasEdgeFunctions ? 'edge functions' : ''} which require authentication.`,
       )
       const loginCommand = isInteractive()
-        ? chalk.cyanBright('netlify login')
-        : chalk.cyanBright('netlify login --request <message>')
+        ? styleText('cyanBright', 'netlify login')
+        : styleText('cyanBright', 'netlify login --request <message>')
       log(`Run ${loginCommand} first, then retry your deploy command.\n`)
       exit(1)
     }
@@ -1255,8 +1255,8 @@ const anonymousDeploy = async (options: DeployOptionValues, command: BaseCommand
     const dropError = error as DropApiError
     if (dropError.status === 429) {
       const loginCommand = isInteractive()
-        ? chalk.cyanBright('netlify login')
-        : chalk.cyanBright('netlify login --request <message>')
+        ? styleText('cyanBright', 'netlify login')
+        : styleText('cyanBright', 'netlify login --request <message>')
       return logAndThrowError(
         `You've reached the daily limit for anonymous deploys. Run ${loginCommand} to sign up or log in, then retry your deploy.`,
       )
@@ -1298,7 +1298,7 @@ const anonymousDeploy = async (options: DeployOptionValues, command: BaseCommand
   }
 
   log('')
-  log(chalk.cyanBright.bold(`🚀 Deploy complete\n${'─'.repeat(64)}`))
+  log(styleText(['cyanBright', 'bold'], `🚀 Deploy complete\n${'─'.repeat(64)}`))
   log('')
 
   const boxContent = isPasswordProtected
@@ -1316,10 +1316,10 @@ const anonymousDeploy = async (options: DeployOptionValues, command: BaseCommand
       titleAlignment: 'center',
     }),
   )
-  log(`  ${chalk.bold('Claim on Netlify:')}`)
+  log(`  ${styleText('bold', 'Claim on Netlify:')}`)
   log(`  ${claimUrl}`)
   log('')
-  log(`  ${chalk.bold('Claim via CLI:')}`)
+  log(`  ${styleText('bold', 'Claim via CLI:')}`)
   log(`  netlify claim --site ${deployInfo.id} --token ${dropToken}`)
   log('')
   warn('Anonymously deployed sites need to be claimed within 60 minutes.')
@@ -1340,17 +1340,13 @@ export const deploy = async (options: DeployOptionValues, command: BaseCommand) 
       const hasSiteData = (site.id || options.site) && siteInfo.url
       if (!hasSiteData && !options.createSite) {
         return logAndThrowError(
-          `No project linked. Use ${chalk.cyanBright(
-            '--create-site <name>',
-          )} to create a new site, or ${chalk.cyanBright('--site <name-or-id>')} to deploy to an existing project.`,
+          `No project linked. Use ${styleText('cyanBright', '--create-site <name>')} to create a new site, or ${styleText('cyanBright', '--site <name-or-id>')} to deploy to an existing project.`,
         )
       }
     } else {
       if (options.env != null || options.secretEnv != null) {
         return logAndThrowError(
-          `${chalk.cyanBright('--env')} and ${chalk.cyanBright(
-            '--secret-env',
-          )} require an account. Log in, or deploy without them.`,
+          `${styleText('cyanBright', '--env')} and ${styleText('cyanBright', '--secret-env')} require an account. Log in, or deploy without them.`,
         )
       }
       return anonymousDeploy(options, command)
@@ -1360,11 +1356,7 @@ export const deploy = async (options: DeployOptionValues, command: BaseCommand) 
   const [authToken] = await getToken(options.auth)
   if (!authToken && !isInteractive()) {
     return logAndThrowError(
-      `Authentication required. NETLIFY_AUTH_TOKEN is not set and ${chalk.cyanBright(
-        '`netlify login --request <message>`',
-      )} can be used to authenticate.\nAlternatively, use ${chalk.cyanBright(
-        '--allow-anonymous',
-      )} to deploy without an account.`,
+      `Authentication required. NETLIFY_AUTH_TOKEN is not set and ${styleText('cyanBright', '`netlify login --request <message>`')} can be used to authenticate.\nAlternatively, use ${styleText('cyanBright', '--allow-anonymous')} to deploy without an account.`,
     )
   }
   await command.authenticate(options.auth)

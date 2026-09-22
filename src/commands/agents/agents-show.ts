@@ -1,6 +1,6 @@
 import type { OptionValues } from 'commander'
 
-import { chalk, logAndThrowError, log, logJson } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, log, logJson } from '../../utils/command-helpers.js'
 import { startSpinner, stopSpinner } from '../../lib/spinner.js'
 import type BaseCommand from '../base-command.js'
 import type { AgentRunner, AgentRunnerSession } from './types.js'
@@ -47,13 +47,13 @@ export const agentsShow = async (id: string, options: AgentShowOptions, command:
     }
 
     // Display detailed information
-    log(chalk.bold('Agent Task Details'))
+    log(styleText('bold', 'Agent Task Details'))
     log(``)
 
-    log(chalk.bold('Basic Information:'))
-    log(`  Task ID: ${chalk.cyan(agentRunner.id)}`)
+    log(styleText('bold', 'Basic Information:'))
+    log(`  Task ID: ${styleText('cyan', agentRunner.id)}`)
     log(`  Status: ${formatStatus(agentRunner.state ?? 'unknown')}`)
-    log(`  Site: ${chalk.cyan(siteInfo.name)} (${site.id ?? ''})`)
+    log(`  Site: ${styleText('cyan', siteInfo.name)} (${site.id ?? ''})`)
 
     if (agentRunner.user) {
       log(`  Created by: ${agentRunner.user.full_name ?? 'Anonymous'}`)
@@ -83,7 +83,7 @@ export const agentsShow = async (id: string, options: AgentShowOptions, command:
     }
 
     log(``)
-    log(chalk.bold('Configuration:'))
+    log(styleText('bold', 'Configuration:'))
 
     // Display agent information from latest session
     if (sessions && sessions.length > 0) {
@@ -92,10 +92,10 @@ export const agentsShow = async (id: string, options: AgentShowOptions, command:
         const { agent, model } = latestSession.agent_config
 
         if (agent) {
-          log(`  Agent: ${chalk.cyan(getAgentName(agent))}`)
+          log(`  Agent: ${styleText('cyan', getAgentName(agent))}`)
         }
         if (model) {
-          log(`  Model: ${chalk.cyan(model)}`)
+          log(`  Model: ${styleText('cyan', model)}`)
         }
       }
     }
@@ -103,24 +103,24 @@ export const agentsShow = async (id: string, options: AgentShowOptions, command:
     const isGitBased = Boolean(siteInfo.build_settings?.repo_branch)
 
     if (isGitBased) {
-      log(`  Branch: ${chalk.cyan(agentRunner.branch ?? 'unknown')}`)
+      log(`  Branch: ${styleText('cyan', agentRunner.branch ?? 'unknown')}`)
       if (agentRunner.result_branch) {
-        log(`  Result Branch: ${chalk.green(agentRunner.result_branch)}`)
+        log(`  Result Branch: ${styleText('green', agentRunner.result_branch)}`)
       }
     } else {
-      log(`  Base: ${chalk.cyan('Latest production deployment')}`)
+      log(`  Base: ${styleText('cyan', 'Latest production deployment')}`)
     }
 
     log(``)
-    log(chalk.bold('Task:'))
-    log(`  Prompt: ${chalk.dim(agentRunner.title ?? 'No title')}`)
+    log(styleText('bold', 'Task:'))
+    log(`  Prompt: ${styleText('dim', agentRunner.title ?? 'No title')}`)
 
     if (agentRunner.current_task) {
-      log(`  Current Task: ${chalk.yellow(agentRunner.current_task)}`)
+      log(`  Current Task: ${styleText('yellow', agentRunner.current_task)}`)
     }
 
     log(``)
-    log(chalk.bold('Timeline:'))
+    log(styleText('bold', 'Timeline:'))
     log(`  Created: ${formatDate(agentRunner.created_at)}`)
     log(`  Updated: ${formatDate(agentRunner.updated_at)}`)
 
@@ -134,31 +134,29 @@ export const agentsShow = async (id: string, options: AgentShowOptions, command:
     // Show recent runs if available
     if (sessions && sessions.length > 0) {
       log(``)
-      log(chalk.bold('Recent Runs:'))
+      log(styleText('bold', 'Recent Runs:'))
       sessions.slice(0, 3).forEach((session, index) => {
         log(`  ${(index + 1).toString()}. ${formatStatus(session.state)} - ${session.title ?? 'No title'}`)
         if (session.result && session.state === 'done') {
           const resultPreview = session.result.length > 100 ? session.result.substring(0, 100) + '...' : session.result
-          log(`     ${chalk.dim(resultPreview)}`)
+          log(`     ${styleText('dim', resultPreview)}`)
         }
       })
 
       if (sessions.length > 3) {
-        log(`     ${chalk.dim(`... and ${(sessions.length - 3).toString()} more runs`)}`)
+        log(`     ${styleText('dim', `... and ${(sessions.length - 3).toString()} more runs`)}`)
       }
     }
 
     log(``)
-    log(chalk.bold('Actions:'))
+    log(styleText('bold', 'Actions:'))
 
     if (agentRunner.state === 'running' || agentRunner.state === 'new') {
-      log(`  Stop: ${chalk.cyan(`netlify agents:stop ${agentRunner.id}`)}`)
+      log(`  Stop: ${styleText('cyan', `netlify agents:stop ${agentRunner.id}`)}`)
     }
 
     log(
-      `  View in browser: ${chalk.blue(
-        `https://app.netlify.com/projects/${siteInfo.name}/agent-runs/${agentRunner.id}`,
-      )}`,
+      `  View in browser: ${styleText('blue', `https://app.netlify.com/projects/${siteInfo.name}/agent-runs/${agentRunner.id}`)}`,
     )
 
     return agentRunner

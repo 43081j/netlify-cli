@@ -1,7 +1,7 @@
 import type { NetlifyAPI } from '@netlify/api'
 import parseDuration from 'parse-duration'
 
-import { chalk } from '../../utils/command-helpers.js'
+import { styleText, colorFn } from '../../utils/command-helpers.js'
 
 import { LOG_LEVELS } from './log-levels.js'
 
@@ -88,7 +88,7 @@ const isDebug = () => Boolean(process.env.DEBUG)
 
 const debugLog = (message: string) => {
   if (isDebug()) {
-    process.stderr.write(`${chalk.dim(`[debug] ${message}`)}\n`)
+    process.stderr.write(`${styleText('dim', `[debug] ${message}`)}\n`)
   }
 }
 
@@ -148,16 +148,16 @@ export const fetchHistoricalLogs = async ({
 }
 
 const PREFIX_COLORS = [
-  chalk.cyan,
-  chalk.magenta,
-  chalk.yellow,
-  chalk.green,
-  chalk.blue,
-  chalk.red,
-  chalk.yellowBright,
-  chalk.greenBright,
-  chalk.magentaBright,
-  chalk.cyanBright,
+  colorFn('cyan'),
+  colorFn('magenta'),
+  colorFn('yellow'),
+  colorFn('green'),
+  colorFn('blue'),
+  colorFn('red'),
+  colorFn('yellowBright'),
+  colorFn('greenBright'),
+  colorFn('magentaBright'),
+  colorFn('cyanBright'),
 ]
 
 export const createColorAssigner = (): ((label: string) => (text: string) => string) => {
@@ -177,11 +177,11 @@ export const createColorAssigner = (): ((label: string) => (text: string) => str
 const colorLevel = (level: string): string => {
   switch (level.toUpperCase()) {
     case LOG_LEVELS.INFO:
-      return chalk.blueBright(level)
+      return styleText('blueBright', level)
     case LOG_LEVELS.WARN:
-      return chalk.yellowBright(level)
+      return styleText('yellowBright', level)
     case LOG_LEVELS.ERROR:
-      return chalk.redBright(level)
+      return styleText('redBright', level)
     default:
       return level
   }
@@ -191,8 +191,8 @@ export const formatLogLine = (entry: LogEntry, colorFn?: (text: string) => strin
   const level = entry.level || 'INFO'
   const indicator = SOURCE_INDICATORS[entry.source]
   const label = `[${indicator} ${entry.name}]`
-  const prefix = colorFn ? colorFn(label) : chalk.cyan(label)
-  const timestampStr = Number.isFinite(entry.ts) ? `${chalk.dim(new Date(entry.ts).toISOString())} ` : ''
+  const prefix = colorFn ? colorFn(label) : styleText('cyan', label)
+  const timestampStr = Number.isFinite(entry.ts) ? `${styleText('dim', new Date(entry.ts).toISOString())} ` : ''
   return `${prefix} ${timestampStr}${colorLevel(level)} ${entry.message}`
 }
 

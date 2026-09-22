@@ -6,7 +6,7 @@ import terminalLink from 'terminal-link'
 import { normalizeContext } from '../../utils/env/index.js'
 import { findDuplicateKey, mergeDeployEnvVars, parseDeployEnvVar } from '../../utils/env/deploy-env-vars.js'
 import BaseCommand from '../base-command.js'
-import { chalk, logAndThrowError, warn } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, warn } from '../../utils/command-helpers.js'
 import type { DeployOptionValues } from './option_values.js'
 
 export const createDeployCommand = (program: BaseCommand) =>
@@ -138,7 +138,7 @@ For more information about Netlify deploys, see ${terminalLink(docsUrl, docsUrl,
       }
 
       if (options.build && command.getOptionValueSource('build') === 'cli') {
-        warn(`${chalk.cyanBright('--build')} is now the default and can safely be omitted.`)
+        warn(`${styleText('cyanBright', '--build')} is now the default and can safely be omitted.`)
       }
 
       if (options.branch) {

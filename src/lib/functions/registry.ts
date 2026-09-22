@@ -10,7 +10,8 @@ import { type MemoizeCache, watchDebounced } from '@netlify/dev-utils'
 import { extractZip } from '../../utils/zip.js'
 
 import {
-  chalk,
+  styleText,
+  colorFn,
   log,
   getTerminalLink,
   NETLIFYDEVERR,
@@ -211,9 +212,7 @@ export class FunctionsRegistry {
         const { filename } = func
         const newFilename = filename ? `${basename(filename, extname(filename))}${recommendedExtension}` : null
         const action = newFilename
-          ? `rename the function file to ${chalk.underline(
-              newFilename,
-            )}. Refer to https://ntl.fyi/functions-runtime for more information`
+          ? `rename the function file to ${styleText('underline', newFilename)}. Refer to https://ntl.fyi/functions-runtime for more information`
           : `refer to https://ntl.fyi/functions-runtime`
         const warning = `The function is using the legacy CommonJS format. To start using ES modules, ${action}.`
 
@@ -294,12 +293,10 @@ export class FunctionsRegistry {
       const { routes = [] } = (await func.getBuildData()) ?? {}
 
       if (routes.length !== 0) {
-        const paths = routes.map((route) => chalk.underline(route.pattern)).join(', ')
+        const paths = routes.map((route) => styleText('underline', route.pattern)).join(', ')
 
         warn(
-          `Function ${chalk.yellow(func.name)} cannot be invoked on ${chalk.underline(
-            url.pathname,
-          )}, because the function has the following URL paths defined: ${paths}`,
+          `Function ${styleText('yellow', func.name)} cannot be invoked on ${styleText('underline', url.pathname)}, because the function has the following URL paths defined: ${paths}`,
         )
 
         return
@@ -332,7 +329,7 @@ export class FunctionsRegistry {
 
     if (event === 'buildError') {
       log(
-        `${NETLIFYDEVERR} ${chalk.red('Failed to load')} function ${chalk.yellow(func?.displayName)}: ${
+        `${NETLIFYDEVERR} ${styleText('red', 'Failed to load')} function ${styleText('yellow', func?.displayName ?? '')}: ${
           func?.buildError?.message ?? ''
         }`,
       )
@@ -340,7 +337,7 @@ export class FunctionsRegistry {
 
     if (event === 'extracted') {
       log(
-        `${NETLIFYDEVLOG} ${chalk.green('Extracted')} function ${chalk.yellow(func?.displayName)} from ${
+        `${NETLIFYDEVLOG} ${styleText('green', 'Extracted')} function ${styleText('yellow', func?.displayName ?? '')} from ${
           func?.mainFile ?? ''
         }.`,
       )
@@ -350,42 +347,44 @@ export class FunctionsRegistry {
 
     if (event === 'loaded') {
       const icon = warningsText ? NETLIFYDEVWARN : NETLIFYDEVLOG
-      const color = warningsText ? chalk.yellow : chalk.green
+      const color = warningsText ? colorFn('yellow') : colorFn('green')
       const mode =
         func?.runtimeAPIVersion === 1 && this.logLambdaCompat
           ? ` in ${getTerminalLink('Lambda compatibility mode', 'https://ntl.fyi/lambda-compat')}`
           : ''
 
-      log(`${icon} ${color('Loaded')} function ${chalk.yellow(func?.displayName)}${mode}${warningsText}`)
+      log(`${icon} ${color('Loaded')} function ${styleText('yellow', func?.displayName ?? '')}${mode}${warningsText}`)
 
       return
     }
 
     if (event === 'missing-types-package') {
       log(
-        `${NETLIFYDEVWARN} For a better experience with TypeScript functions, consider installing the ${chalk.underline(
-          TYPES_PACKAGE,
-        )} package. Refer to https://ntl.fyi/function-types for more information.`,
+        `${NETLIFYDEVWARN} For a better experience with TypeScript functions, consider installing the ${styleText('underline', TYPES_PACKAGE)} package. Refer to https://ntl.fyi/function-types for more information.`,
       )
     }
 
     if (event === 'reloaded') {
       const icon = warningsText ? NETLIFYDEVWARN : NETLIFYDEVLOG
-      const color = warningsText ? chalk.yellow : chalk.green
+      const color = warningsText ? colorFn('yellow') : colorFn('green')
 
-      log(`${icon} ${color('Reloaded')} function ${chalk.yellow(func?.displayName)}${warningsText}`)
+      log(`${icon} ${color('Reloaded')} function ${styleText('yellow', func?.displayName ?? '')}${warningsText}`)
 
       return
     }
 
     if (event === 'reloading') {
-      log(`${NETLIFYDEVLOG} ${chalk.magenta('Reloading')} function ${chalk.yellow(func?.displayName)}...`)
+      log(
+        `${NETLIFYDEVLOG} ${styleText('magenta', 'Reloading')} function ${styleText('yellow', func?.displayName ?? '')}...`,
+      )
 
       return
     }
 
     if (event === 'removed') {
-      log(`${NETLIFYDEVLOG} ${chalk.magenta('Removed')} function ${chalk.yellow(func?.displayName)}`)
+      log(
+        `${NETLIFYDEVLOG} ${styleText('magenta', 'Removed')} function ${styleText('yellow', func?.displayName ?? '')}`,
+      )
     }
   }
 

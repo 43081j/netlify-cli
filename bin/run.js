@@ -7,8 +7,6 @@ import { maybeEnableCompileCache } from '../dist/utils/nodejs-compile-cache.js'
 // 12 hours
 const UPDATE_CHECK_INTERVAL = 432e5
 
-const NETLIFY_CYAN_HEX = '#28b5ac'
-
 const main = async () => {
   // TODO(serhalp) Investigate and fix this at the root instead.
   // This avoids `MaxListenersExceededWarning` warnings during Edge Functions bundling,
@@ -16,11 +14,10 @@ const main = async () => {
   // https://github.com/netlify/build/blob/ca0bb348b3d7437d2418526f49b803a3db4e5ac2/packages/build/src/steps/run_step.ts.
   EventEmitter.defaultMaxListeners = 25
 
-  const { default: chalk } = await import('chalk')
   const { notifier } = await import('nano-notifier')
   const { default: terminalLink } = await import('terminal-link')
   const { createMainCommand } = await import('../dist/commands/main.js')
-  const { logError } = await import('../dist/utils/command-helpers.js')
+  const { logError, NETLIFY_CYAN, styleText } = await import('../dist/utils/command-helpers.js')
   const { default: getPackageJson } = await import('../dist/utils/get-cli-package-json.js')
   const { runProgram } = await import('../dist/utils/run-program.js')
 
@@ -32,17 +29,17 @@ const main = async () => {
       interval: UPDATE_CHECK_INTERVAL,
     })
     if (updateNotifier.outdated) {
-      const message = `Update available ${chalk.dim(updateNotifier.current)} → ${chalk.green(updateNotifier.latest)}
+      const message = `Update available ${styleText('dim', updateNotifier.current)} → ${styleText('green', updateNotifier.latest)}
 See what's new in the ${terminalLink('release notes', 'https://ntl.fyi/cli-versions')}
 
-Run ${chalk.inverse.hex(NETLIFY_CYAN_HEX)(`npm i -g ${pkg.name}`)} to update`
+Run ${styleText('inverse', NETLIFY_CYAN(`npm i -g ${pkg.name}`))} to update`
       updateNotifier.notify({
         title: '⬥',
         message,
         boxOptions: {
           contentAlign: 'center',
           titleAlign: 'center',
-          formatBorder: (border) => chalk.hex(NETLIFY_CYAN_HEX)(border),
+          formatBorder: (border) => NETLIFY_CYAN(border),
         },
       })
     }

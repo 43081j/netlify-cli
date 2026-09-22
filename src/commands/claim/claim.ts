@@ -1,4 +1,4 @@
-import { chalk, log, logAndThrowError, NETLIFYDEVLOG } from '../../utils/command-helpers.js'
+import { styleText, log, logAndThrowError, NETLIFYDEVLOG } from '../../utils/command-helpers.js'
 import { claimDropSite } from '../../utils/deploy/drop-api.js'
 import type BaseCommand from '../base-command.js'
 
@@ -21,5 +21,5 @@ export const claim = async (siteId: string, dropToken: string, command: BaseComm
   command.netlify.state.set('siteId', siteId)
 
   log(`\n${NETLIFYDEVLOG} Site claimed successfully and linked to your account!`)
-  log(`You can now deploy to this site with: ${chalk.cyanBright('netlify deploy --prod')}\n`)
+  log(`You can now deploy to this site with: ${styleText('cyanBright', 'netlify deploy --prod')}\n`)
 }

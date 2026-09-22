@@ -1,11 +1,10 @@
 import os from 'os'
 import fs from 'fs'
 import process from 'process'
-import { format, inspect } from 'util'
+import { format, inspect, styleText as nodeStyleText } from 'util'
 
 import type { NetlifyAPI } from '@netlify/api'
 import { getAPIToken } from '@netlify/dev-utils'
-import { Chalk, type ChalkInstance as ChalkInstancePrimitiveType } from 'chalk'
 import type { Option } from 'commander'
 import WSL from 'is-wsl'
 import terminalLink from 'terminal-link'
@@ -20,23 +19,19 @@ import type { CachedConfig } from '../lib/build.js'
 
 /** The parsed process argv without the binary only arguments and flags */
 const argv = process.argv.slice(2)
-/**
- * Chalk instance for CLI that can be initialized with no colors mode
- * needed for json outputs where we don't want to have colors
- * @param  {boolean} noColors - disable chalk colors
- * @return {ChalkInstancePrimitiveType} - default or custom chalk instance
- */
-const safeChalk = function (noColors: boolean) {
-  if (noColors) {
-    const colorlessChalk = new Chalk({ level: 0 })
-    return colorlessChalk
-  }
-  return new Chalk()
-}
+const noColors = argv.includes('--json')
 
-export const chalk = safeChalk(argv.includes('--json'))
+export const styleText: typeof nodeStyleText = (formats, text, options) =>
+  noColors ? text : nodeStyleText(formats, text, options)
 
-export type ChalkInstance = ChalkInstancePrimitiveType
+export type StyleFormat = Parameters<typeof nodeStyleText>[0]
+
+export type ColorFn = (text: string) => string
+
+export const colorFn =
+  (formats: StyleFormat): ColorFn =>
+  (text) =>
+    styleText(formats, text)
 
 /**
  * Adds the filler to the start of the string
@@ -63,14 +58,17 @@ export const getRequestUserAgent = (env: NodeJS.ProcessEnv = process.env): strin
 /** A list of base command flags that needs to be sorted down on documentation and on help pages */
 const BASE_FLAGS = new Set(['--debug', '--http-proxy', '--http-proxy-certificate-filename'])
 
-export const NETLIFY_CYAN = chalk.rgb(40, 180, 170)
+// Slight trickery here - we rely on styleText's own "should colour" check instead
+// of rolling our own.
+export const NETLIFY_CYAN: ColorFn = (text) =>
+  styleText('cyan', text) === text ? text : `\u001B[38;2;40;180;170m${text}\u001B[39m`
 export const NETLIFY_CYAN_HEX = '#28b5ac'
 
 // TODO(serhalp) I *think* this "dev" naming is a vestige of the predecessor of the CLI? Rename to avoid
 // confusion with `netlify dev` command?
-export const NETLIFYDEVLOG = chalk.greenBright('⬥')
-export const NETLIFYDEVWARN = chalk.yellowBright('⬥')
-export const NETLIFYDEVERR = chalk.redBright('⬥')
+export const NETLIFYDEVLOG = styleText('greenBright', '⬥')
+export const NETLIFYDEVWARN = styleText('yellowBright', '⬥')
+export const NETLIFYDEVERR = styleText('redBright', '⬥')
 
 export const BANG = process.platform === 'win32' ? '»' : '›'
 
@@ -111,16 +109,12 @@ export const pollForToken = async ({
     // @ts-expect-error TS(2571) FIXME: Object is of type 'unknown'.
     if (error_.name === 'TimeoutError') {
       return logAndThrowError(
-        `Timed out waiting for authorization. If you do not have a ${chalk.bold.greenBright(
-          'Netlify',
-        )} account, please create one at ${chalk.magenta(
-          'https://app.netlify.com/signup',
-        )}, then run ${chalk.cyanBright('netlify login')} again.`,
+        `Timed out waiting for authorization. If you do not have a ${styleText(['bold', 'greenBright'], 'Netlify')} account, please create one at ${styleText('magenta', 'https://app.netlify.com/signup')}, then run ${styleText('cyanBright', 'netlify login')} again.`,
       )
     }
     if ((error_ as { status?: number }).status === 404) {
       return logAndThrowError(
-        `Authorization was denied or the login session expired. Run ${chalk.cyanBright('netlify login')} to try again.`,
+        `Authorization was denied or the login session expired. Run ${styleText('cyanBright', 'netlify login')} to try again.`,
       )
     }
     return logAndThrowError(error_)
@@ -187,7 +181,7 @@ export const logPadded = (message = '', ...args: string[]) => {
  * logs a warning message
  */
 export const warn = (message = '') => {
-  const bang = chalk.yellow(BANG)
+  const bang = styleText('yellow', BANG)
   log(` ${bang}   Warning: ${message}`)
 }
 
@@ -208,11 +202,11 @@ export const logAndThrowError = (message: unknown): never => {
 export const logError = (message: unknown): void => {
   const err = toError(message)
 
-  const bang = chalk.red(BANG)
+  const bang = styleText('red', BANG)
   if (process.env.DEBUG) {
     process.stderr.write(` ${bang}   Warning: ${err.stack?.split('\n').join(`\n ${bang}   `)}\n`)
   } else {
-    process.stderr.write(` ${bang}   ${chalk.red(`${err.name}:`)} ${err.message}\n`)
+    process.stderr.write(` ${bang}   ${styleText('red', `${err.name}:`)} ${err.message}\n`)
   }
 }
 

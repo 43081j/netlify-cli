@@ -6,7 +6,7 @@ import type { NetlifyAPI } from '@netlify/api'
 
 import { listSites } from '../../lib/api.js'
 import { startSpinner } from '../../lib/spinner.js'
-import { chalk, logAndThrowError, exit, log, APIError, netlifyCommand } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, exit, log, APIError, netlifyCommand } from '../../utils/command-helpers.js'
 import { ensureNetlifyIgnore } from '../../utils/gitignore.js'
 import getRepoData from '../../utils/get-repo-data.js'
 import { isInteractive } from '../../utils/scripted-commands.js'
@@ -24,9 +24,7 @@ const findSiteByRepoUrl = async (api: NetlifyAPI, repoUrl: string): Promise<Site
   if (sites.length === 0) {
     spinner.error()
     return logAndThrowError(
-      `You don't have any projects yet. Run ${chalk.cyanBright(
-        `${netlifyCommand()} sites:create`,
-      )} to create a project.`,
+      `You don't have any projects yet. Run ${styleText('cyanBright', `${netlifyCommand()} sites:create`)} to create a project.`,
     )
   }
 
@@ -34,20 +32,20 @@ const findSiteByRepoUrl = async (api: NetlifyAPI, repoUrl: string): Promise<Site
 
   if (matchingSites.length === 0) {
     spinner.error()
-    log(chalk.redBright.bold.underline(`No matching project found`))
+    log(styleText(['redBright', 'bold', 'underline'], `No matching project found`))
     log()
     log(`No project found with the remote ${repoUrl}.
 
 Double check you are in the correct working directory and a remote origin repo is configured.
 
-Run ${chalk.cyanBright('git remote -v')} to see a list of your git remotes.
+Run ${styleText('cyanBright', 'git remote -v')} to see a list of your git remotes.
 
 To link manually:
-  ${chalk.cyanBright(`${netlifyCommand()} link --id <project-id>`)}
-  ${chalk.cyanBright(`${netlifyCommand()} link --name <project-name>`)}
+  ${styleText('cyanBright', `${netlifyCommand()} link --id <project-id>`)}
+  ${styleText('cyanBright', `${netlifyCommand()} link --name <project-name>`)}
 
 To search for projects:
-  ${chalk.cyanBright(`${netlifyCommand()} sites:search <search-term>`)}`)
+  ${styleText('cyanBright', `${netlifyCommand()} sites:search <search-term>`)}`)
 
     return exit(1)
   }
@@ -102,7 +100,7 @@ const linkPrompt = async (command: BaseCommand, options: LinkOptionValues): Prom
   }
 
   log()
-  log(`${chalk.cyanBright(`${netlifyCommand()} link`)} will connect this folder to a project on Netlify`)
+  log(`${styleText('cyanBright', `${netlifyCommand()} link`)} will connect this folder to a project on Netlify`)
   log()
   const { linkType } = await inquirer.prompt<{ linkType: string | undefined }>([
     {
@@ -153,13 +151,13 @@ const linkPrompt = async (command: BaseCommand, options: LinkOptionValues): Prom
         return logAndThrowError(`No project names found containing '${searchTerm}'.
 
 To search for projects:
-  ${chalk.cyanBright(`${netlifyCommand()} sites:search <search-term>`)}
+  ${styleText('cyanBright', `${netlifyCommand()} sites:search <search-term>`)}
 
 To link by project ID:
-  ${chalk.cyanBright(`${netlifyCommand()} link --id <project-id>`)}
+  ${styleText('cyanBright', `${netlifyCommand()} link --id <project-id>`)}
 
 To create a new project:
-  ${chalk.cyanBright(`${netlifyCommand()} sites:create`)}`)
+  ${styleText('cyanBright', `${netlifyCommand()} sites:create`)}`)
       }
 
       if (matchingSites.length > 1) {
@@ -199,9 +197,7 @@ To create a new project:
 
       if (!sites || sites.length === 0) {
         return logAndThrowError(
-          `You don't have any projects yet. Run ${chalk.cyanBright(
-            `${netlifyCommand()} sites:create`,
-          )} to create a project.`,
+          `You don't have any projects yet. Run ${styleText('cyanBright', `${netlifyCommand()} sites:create`)} to create a project.`,
         )
       }
 
@@ -258,10 +254,10 @@ To create a new project:
 
   // Log output
   log()
-  log(chalk.greenBright.bold.underline(`Directory Linked`))
+  log(styleText(['greenBright', 'bold', 'underline'], `Directory Linked`))
   log()
-  log(`Admin url: ${chalk.magentaBright(site.admin_url)}`)
-  log(`Project url:  ${chalk.cyanBright(site.ssl_url || site.url)}`)
+  log(`Admin url: ${styleText('magentaBright', site.admin_url ?? '')}`)
+  log(`Project url:  ${styleText('cyanBright', site.ssl_url ?? site.url ?? '')}`)
   log()
   log(`You can now run other \`netlify\` cli commands in this directory`)
 
@@ -299,7 +295,7 @@ export const link = async (options: LinkOptionValues, command: BaseCommand) => {
     log(`Project already linked to "${initialSiteData.name}"`)
     log(`Admin url: ${initialSiteData.admin_url}`)
     log()
-    log(`To unlink this project, run: ${chalk.cyanBright(`${netlifyCommand()} unlink`)}`)
+    log(`To unlink this project, run: ${styleText('cyanBright', `${netlifyCommand()} unlink`)}`)
   } else if (options.id) {
     try {
       // @ts-expect-error FIXME(serhalp): Mismatch between hardcoded `SiteInfo` and new generated Netlify API types.
@@ -314,7 +310,7 @@ export const link = async (options: LinkOptionValues, command: BaseCommand) => {
 
     // Save site ID
     state.set('siteId', newSiteData.id)
-    log(`${chalk.green('✔')} Linked to ${newSiteData.name}`)
+    log(`${styleText('green', '✔')} Linked to ${newSiteData.name}`)
 
     await track('sites_linked', {
       siteId: newSiteData.id,
@@ -343,16 +339,16 @@ export const link = async (options: LinkOptionValues, command: BaseCommand) => {
       return logAndThrowError(`No projects found named ${options.name}.
 
 To search for projects:
-  ${chalk.cyanBright(`${netlifyCommand()} sites:search ${options.name}`)}
+  ${styleText('cyanBright', `${netlifyCommand()} sites:search ${options.name}`)}
 
 To link by project ID:
-  ${chalk.cyanBright(`${netlifyCommand()} link --id <project-id>`)}`)
+  ${styleText('cyanBright', `${netlifyCommand()} link --id <project-id>`)}`)
     }
 
     const matchingSiteData = results.find((site: SiteInfo) => site.name === options.name) || results[0]
     state.set('siteId', matchingSiteData.id)
 
-    log(`${chalk.green('✔')} Linked to ${matchingSiteData.name}`)
+    log(`${styleText('green', '✔')} Linked to ${matchingSiteData.name}`)
 
     await track('sites_linked', {
       siteId: (matchingSiteData && matchingSiteData.id) || siteId,
@@ -362,7 +358,7 @@ To link by project ID:
   } else if (options.gitRemoteUrl) {
     newSiteData = await findSiteByRepoUrl(api, options.gitRemoteUrl)
     state.set('siteId', newSiteData.id)
-    log(`${chalk.green('✔')} Linked to ${newSiteData.name}`)
+    log(`${styleText('green', '✔')} Linked to ${newSiteData.name}`)
 
     await track('sites_linked', {
       siteId: newSiteData.id,
@@ -374,19 +370,19 @@ To link by project ID:
       return logAndThrowError(`No project specified. In non-interactive mode, you must specify how to link:
 
 Link by project ID:
-  ${chalk.cyanBright(`${netlifyCommand()} link --id <project-id>`)}
+  ${styleText('cyanBright', `${netlifyCommand()} link --id <project-id>`)}
 
 Link by project name:
-  ${chalk.cyanBright(`${netlifyCommand()} link --name <project-name>`)}
+  ${styleText('cyanBright', `${netlifyCommand()} link --name <project-name>`)}
 
 Link by git remote URL:
-  ${chalk.cyanBright(`${netlifyCommand()} link --gitRemoteUrl <url>`)}
+  ${styleText('cyanBright', `${netlifyCommand()} link --gitRemoteUrl <url>`)}
 
 To search for projects:
-  ${chalk.cyanBright(`${netlifyCommand()} sites:search <search-term>`)}
+  ${styleText('cyanBright', `${netlifyCommand()} sites:search <search-term>`)}
 
 To list all projects:
-  ${chalk.cyanBright(`${netlifyCommand()} sites:list`)}`)
+  ${styleText('cyanBright', `${netlifyCommand()} sites:list`)}`)
     }
 
     newSiteData = await linkPrompt(command, options)

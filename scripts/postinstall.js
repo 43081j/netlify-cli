@@ -7,8 +7,6 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import process from 'node:process'
-// eslint-disable-next-line no-restricted-imports
-import chalk from 'chalk'
 import boxen from 'boxen'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -18,6 +16,7 @@ const NETLIFY_CYAN_HEX = '#28b5ac'
 const postInstall = async () => {
   const { createMainCommand } = await import('../dist/commands/index.js')
   const { generateAutocompletion } = await import('../dist/lib/completion/index.js')
+  const { styleText } = await import('../dist/utils/command-helpers.js')
 
   // yarn plug and play seems to have an issue with reading an esm file by building up the cache.
   // as yarn pnp analyzes everything inside the postinstall
@@ -49,16 +48,20 @@ const postInstall = async () => {
     ),
   )
   console.log('Next steps:')
-  console.log(`  ${chalk.cyanBright.bold('netlify login')}    Log in to your Netlify account`)
+  console.log(`  ${styleText(['cyanBright', 'bold'], 'netlify login')}    Log in to your Netlify account`)
   console.log(
-    `  ${chalk.cyanBright.bold('netlify init')}     Connect or create a Netlify project from the current directory`,
+    `  ${styleText(['cyanBright', 'bold'], 'netlify init')}     Connect or create a Netlify project from the current directory`,
   )
-  console.log(`  ${chalk.cyanBright.bold('netlify deploy')}   Deploy the latest changes to your Netlify project`)
-  console.log(`  ${chalk.cyanBright.bold('netlify help')}     Find out what else you can do 👀`)
+  console.log(
+    `  ${styleText(['cyanBright', 'bold'], 'netlify deploy')}   Deploy the latest changes to your Netlify project`,
+  )
+  console.log(`  ${styleText(['cyanBright', 'bold'], 'netlify help')}     Find out what else you can do 👀`)
   console.log('')
-  console.log(`For more help with the CLI, visit ${chalk.cyanBright.bold('https://developers.netlify.com/cli')}`)
+  console.log(
+    `For more help with the CLI, visit ${styleText(['cyanBright', 'bold'], 'https://developers.netlify.com/cli')}`,
+  )
   console.log('')
-  console.log(`For help with Netlify, visit ${chalk.cyanBright.bold('https://docs.netlify.com')}`)
+  console.log(`For help with Netlify, visit ${styleText(['cyanBright', 'bold'], 'https://docs.netlify.com')}`)
   console.log('')
 }
 

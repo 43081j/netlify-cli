@@ -6,7 +6,7 @@ import { isEmpty } from './object-utilities.js'
 
 import { supportsBackgroundFunctions } from '../lib/account.js'
 
-import { NETLIFYDEVLOG, chalk, logAndThrowError, log, warn, APIError } from './command-helpers.js'
+import { NETLIFYDEVLOG, styleText, colorFn, logAndThrowError, log, warn, APIError } from './command-helpers.js'
 import { loadDotEnvFiles } from './dot-env.js'
 import type { EnvironmentVariables, SiteInfo } from './types.js'
 
@@ -14,27 +14,27 @@ import type { EnvironmentVariables, SiteInfo } from './types.js'
 const ENV_VAR_SOURCES = {
   account: {
     name: 'shared',
-    printFn: chalk.magenta,
+    printFn: colorFn('magenta'),
   },
   addons: {
     name: 'addon',
-    printFn: chalk.yellow,
+    printFn: colorFn('yellow'),
   },
   configFile: {
     name: 'netlify.toml file',
-    printFn: chalk.green,
+    printFn: colorFn('green'),
   },
   general: {
     name: 'general context',
-    printFn: chalk.italic,
+    printFn: colorFn('italic'),
   },
   process: {
     name: 'process',
-    printFn: chalk.red,
+    printFn: colorFn('red'),
   },
   ui: {
     name: 'project settings',
-    printFn: chalk.blue,
+    printFn: colorFn('blue'),
   },
 }
 
@@ -45,7 +45,7 @@ const ERROR_CALL_TO_ACTION =
 const validateSiteInfo = ({ site, siteInfo }) => {
   if (isEmpty(siteInfo)) {
     return logAndThrowError(
-      `Failed to retrieve project information for project ${chalk.yellow(site.id)}. ${ERROR_CALL_TO_ACTION}`,
+      `Failed to retrieve project information for project ${styleText('yellow', site.id)}. ${ERROR_CALL_TO_ACTION}`,
     )
   }
 }
@@ -85,7 +85,7 @@ const getAddons = async ({ api, site }) => {
     return addons
   } catch (error_) {
     return logAndThrowError(
-      `Failed retrieving addons for site ${chalk.yellow(site.id)}: ${
+      `Failed retrieving addons for site ${styleText('yellow', site.id)}: ${
         (error_ as APIError).message
       }. ${ERROR_CALL_TO_ACTION}`,
     )
@@ -184,7 +184,7 @@ export const getSiteInformation = async ({
 // @ts-expect-error TS(7006) FIXME: Parameter 'source' implicitly has an 'any' type.
 const getEnvSourceName = (source) => {
   // @ts-expect-error TS(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-  const { name = source, printFn = chalk.green } = ENV_VAR_SOURCES[source] || {}
+  const { name = source, printFn = colorFn('green') } = ENV_VAR_SOURCES[source] || {}
 
   return printFn(name)
 }
@@ -231,10 +231,9 @@ export const injectEnvVariables = (env: EnvironmentVariables): void => {
       const sourceName = getEnvSourceName(source)
 
       log(
-        chalk.dim(
-          `${NETLIFYDEVLOG} Ignored ${chalk.bold(sourceName)} env var: ${chalk.yellow(
-            key,
-          )} (defined in ${usedSourceName})`,
+        styleText(
+          'dim',
+          `${NETLIFYDEVLOG} Ignored ${styleText('bold', sourceName)} env var: ${styleText('yellow', key)} (defined in ${usedSourceName})`,
         ),
       )
     })
@@ -252,7 +251,7 @@ export const injectEnvVariables = (env: EnvironmentVariables): void => {
 
   for (const [source, keys] of Object.entries(envVarsToLogByUsedSource)) {
     const sourceName = getEnvSourceName(source)
-    log(`${NETLIFYDEVLOG} Injected ${sourceName} env vars: ${keys.map((key) => chalk.yellow(key)).join(', ')}`)
+    log(`${NETLIFYDEVLOG} Injected ${sourceName} env vars: ${keys.map((key) => styleText('yellow', key)).join(', ')}`)
   }
 }
 

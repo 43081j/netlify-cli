@@ -11,7 +11,7 @@ import { generateAutocompletion } from '../../lib/completion/index.js'
 import {
   logAndThrowError,
   log,
-  chalk,
+  styleText,
   checkFileForLine,
   TABTAB_CONFIG_LINE,
   AUTOLOAD_COMPINIT,
@@ -55,7 +55,7 @@ export const completionGenerate = async (_options: OptionValues, command: BaseCo
     !checkFileForLine(zshConfigFilepath, AUTOLOAD_COMPINIT)
   ) {
     log(`To enable Tabtab autocompletion with zsh, the following line may need to be added to your ~/.zshrc:`)
-    log(chalk.bold.cyan(`\n${AUTOLOAD_COMPINIT}\n`))
+    log(styleText(['bold', 'cyan'], `\n${AUTOLOAD_COMPINIT}\n`))
     const { compinitAdded } = await inquirer.prompt([
       {
         type: 'confirm',
@@ -79,8 +79,8 @@ export const completionGenerate = async (_options: OptionValues, command: BaseCo
 
   if (process.platform !== 'win32') {
     log("\nTo ensure proper functionality, you'll need to set appropriate file permissions.")
-    log(chalk.bold('Add executable permissions by running the following command:'))
-    log(chalk.bold.cyan(`\nchmod +x ${completer}\n`))
+    log(styleText('bold', 'Add executable permissions by running the following command:'))
+    log(styleText(['bold', 'cyan'], `\nchmod +x ${completer}\n`))
   } else {
     log(`\nTo ensure proper functionality, you may need to set appropriate file permissions to ${completer}.`)
   }

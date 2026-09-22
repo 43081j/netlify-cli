@@ -2,7 +2,7 @@ import { methods, type NetlifyAPI } from '@netlify/api'
 import AsciiTable from 'ascii-table'
 import type { OptionValues } from 'commander'
 
-import { chalk, logAndThrowError, exit, log, logJson } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, exit, log, logJson } from '../../utils/command-helpers.js'
 import type BaseCommand from '../base-command.js'
 
 type ApiMethodName = keyof NetlifyAPI
@@ -26,7 +26,7 @@ export const apiCommand = async (apiMethodName: string, options: OptionValues, c
     log(table.toString())
     log()
     log('Above is a list of available API methods')
-    log(`To run a method use "${chalk.cyanBright('netlify api methodName')}"`)
+    log(`To run a method use "${styleText('cyanBright', 'netlify api methodName')}"`)
     exit()
   }
 
@@ -51,7 +51,7 @@ export const apiCommand = async (apiMethodName: string, options: OptionValues, c
       } catch {
         const received = options.data.length > 80 ? `${options.data.slice(0, 80)}…` : options.data
         return logAndThrowError(
-          `Invalid JSON provided to the ${chalk.cyanBright('--data')} flag.
+          `Invalid JSON provided to the ${styleText('cyanBright', '--data')} flag.
 Received: ${received}
 The --data flag expects a JSON object of API parameters, e.g. --data '{"site_id":"123456"}'.
 Note: key=value pairs are not accepted; use JSON syntax instead.`,
@@ -73,7 +73,7 @@ Note: key=value pairs are not accepted; use JSON syntax instead.`,
       const requiredNames = Object.keys(pathVariables).join(', ')
       return logAndThrowError(
         `${error_.message}
-The ${chalk.cyanBright('--data')} flag must include the path variable(s) required by ${apiMethodName}${
+The ${styleText('cyanBright', '--data')} flag must include the path variable(s) required by ${apiMethodName}${
           requiredNames ? `: ${requiredNames}` : ''
         }, e.g. --data '{"site_id":"123456"}'`,
       )

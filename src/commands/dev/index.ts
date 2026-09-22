@@ -1,7 +1,7 @@
 import { Option, type OptionValues } from 'commander'
 import terminalLink from 'terminal-link'
 
-import { BANG, chalk } from '../../utils/command-helpers.js'
+import { BANG, styleText } from '../../utils/command-helpers.js'
 import { normalizeContext } from '../../utils/env/index.js'
 import { getGeoCountryArgParser } from '../../utils/validation.js'
 import type BaseCommand from '../base-command.js'
@@ -10,7 +10,7 @@ const validateShortFlagArgs = (args: string) => {
   if (args.startsWith('=')) {
     throw new Error(
       `Short flag options like -e or -E don't support the '=' sign
- ${chalk.red(BANG)}   Supported formats:
+ ${styleText('red', BANG)}   Supported formats:
       netlify dev -e
       netlify dev -e 127.0.0.1:9229
       netlify dev -e127.0.0.1:9229

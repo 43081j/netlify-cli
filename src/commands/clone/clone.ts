@@ -4,7 +4,14 @@ import { LocalState } from '@netlify/dev-utils'
 import inquirer from 'inquirer'
 
 import { normalizeRepoUrl } from '../../utils/normalize-repo-url.js'
-import { chalk, logAndThrowError, log, getToken, netlifyCommand, type APIError } from '../../utils/command-helpers.js'
+import {
+  styleText,
+  logAndThrowError,
+  log,
+  getToken,
+  netlifyCommand,
+  type APIError,
+} from '../../utils/command-helpers.js'
 import { runGit } from '../../utils/run-git.js'
 import execa from '../../utils/execa.js'
 import type BaseCommand from '../base-command.js'
@@ -150,18 +157,18 @@ const logCloneSuccess = (
   { credentialsConfigured = false, devCommand }: { credentialsConfigured?: boolean; devCommand?: string } = {},
 ): void => {
   log()
-  log(chalk.green('✔ Your project is ready to go!'))
-  log(`→ Next, enter your project directory using ${chalk.cyanBright(`cd ${targetDir}`)}`)
+  log(styleText('green', '✔ Your project is ready to go!'))
+  log(`→ Next, enter your project directory using ${styleText('cyanBright', `cd ${targetDir}`)}`)
   log()
-  log(`→ You can now run other ${chalk.cyanBright('netlify')} CLI commands in this directory`)
+  log(`→ You can now run other ${styleText('cyanBright', 'netlify')} CLI commands in this directory`)
   if (credentialsConfigured) {
     log(`Git is configured to use your Netlify credentials for this repository.`)
   }
-  log(`→ To build and deploy your project: ${chalk.cyanBright('netlify deploy')}`)
+  log(`→ To build and deploy your project: ${styleText('cyanBright', 'netlify deploy')}`)
   if (devCommand) {
-    log(`→ To run your dev server: ${chalk.cyanBright(devCommand)}`)
+    log(`→ To run your dev server: ${styleText('cyanBright', devCommand)}`)
   }
-  log(`→ To see all available commands: ${chalk.cyanBright('netlify help')}`)
+  log(`→ To see all available commands: ${styleText('cyanBright', 'netlify help')}`)
   log()
 }
 
@@ -174,7 +181,7 @@ const cloneFromNetlifyGitService = async (
   const [token] = await getToken()
   if (!token) {
     return logAndThrowError(
-      `No authentication token found. Run ${chalk.cyanBright('netlify login')} to authenticate first.`,
+      `No authentication token found. Run ${styleText('cyanBright', 'netlify login')} to authenticate first.`,
     )
   }
 
@@ -189,9 +196,9 @@ const cloneFromNetlifyGitService = async (
   const targetDir = args.targetDir ?? (await getTargetDir(`./${siteSlug}`))
   const resolvedTargetDir = resolve(targetDir)
 
-  log(`Remote: ${chalk.dim(repoUrl)}`)
+  log(`Remote: ${styleText('dim', repoUrl)}`)
 
-  const cloneSpinner = startSpinner({ text: `Cloning repository to ${chalk.cyan(targetDir)}` })
+  const cloneSpinner = startSpinner({ text: `Cloning repository to ${styleText('cyan', targetDir)}` })
 
   try {
     await cloneFromNetlifyGit(repoUrl, resolvedTargetDir, options.debug ?? false)
@@ -200,7 +207,7 @@ const cloneFromNetlifyGitService = async (
     return logAndThrowError(error)
   }
 
-  cloneSpinner.success(`Cloned repository to ${chalk.cyan(targetDir)}`)
+  cloneSpinner.success(`Cloned repository to ${styleText('cyan', targetDir)}`)
 
   const configSpinner = startSpinner({ text: 'Configuring git credentials' })
 
@@ -237,20 +244,20 @@ export const clone = async (
 
   if (site.id) {
     return logAndThrowError(
-      `This directory is already linked to a Netlify project. Run ${chalk.cyanBright('netlify clone')} from outside any existing linked project directory.`,
+      `This directory is already linked to a Netlify project. Run ${styleText('cyanBright', 'netlify clone')} from outside any existing linked project directory.`,
     )
   }
 
   if (await isInsideGitRepo()) {
     return logAndThrowError(
-      `This directory is already inside a git repository. Run ${chalk.cyanBright('netlify clone')} from outside any existing git repository.`,
+      `This directory is already inside a git repository. Run ${styleText('cyanBright', 'netlify clone')} from outside any existing git repository.`,
     )
   }
 
   const parsedInput = parseNetlifySiteInput(args.repo)
 
   if (parsedInput.isNetlifySite) {
-    const siteSpinner = startSpinner({ text: `Looking up site ${chalk.cyan(parsedInput.siteName)}...` })
+    const siteSpinner = startSpinner({ text: `Looking up site ${styleText('cyan', parsedInput.siteName)}...` })
 
     const siteInfo = await lookupSiteByName(api, parsedInput.siteName)
 
@@ -259,7 +266,7 @@ export const clone = async (
       return logAndThrowError(`Could not find a Netlify site named "${parsedInput.siteName}"`)
     }
 
-    siteSpinner.success(`Found site ${chalk.cyan(siteInfo.name)}`)
+    siteSpinner.success(`Found site ${styleText('cyan', siteInfo.name)}`)
 
     const connectedRepoUrl = siteInfo.build_settings?.repo_url
 
@@ -272,21 +279,21 @@ export const clone = async (
     }
 
     if (connectedRepoUrl) {
-      log(`Site has a connected repository: ${chalk.dim(connectedRepoUrl)}`)
+      log(`Site has a connected repository: ${styleText('dim', connectedRepoUrl)}`)
       log(`Cloning from the connected repository...`)
       log()
 
       const { repoUrl, repoName } = normalizeRepoUrl(connectedRepoUrl)
       const targetDir = args.targetDir ?? (await getTargetDir(`./${repoName}`))
 
-      const cloneSpinner = startSpinner({ text: `Cloning repository to ${chalk.cyan(targetDir)}` })
+      const cloneSpinner = startSpinner({ text: `Cloning repository to ${styleText('cyan', targetDir)}` })
       try {
         await cloneRepo(repoUrl, targetDir, options.debug ?? false)
       } catch (error) {
         cloneSpinner.error()
         return logAndThrowError(error)
       }
-      cloneSpinner.success(`Cloned repository to ${chalk.cyan(targetDir)}`)
+      cloneSpinner.success(`Cloned repository to ${styleText('cyan', targetDir)}`)
 
       await finalizeClone(options, command, targetDir, { id: siteInfo.id, gitRemoteUrl: connectedRepoUrl })
       logCloneSuccess(targetDir)
@@ -302,14 +309,14 @@ export const clone = async (
 
     const targetDir = args.targetDir ?? (await getTargetDir(`./${repoName}`))
 
-    const cloneSpinner = startSpinner({ text: `Cloning repository to ${chalk.cyan(targetDir)}` })
+    const cloneSpinner = startSpinner({ text: `Cloning repository to ${styleText('cyan', targetDir)}` })
     try {
       await cloneRepo(repoUrl, targetDir, options.debug ?? false)
     } catch (error) {
       cloneSpinner.error()
       return logAndThrowError(error)
     }
-    cloneSpinner.success(`Cloned repository to ${chalk.cyan(targetDir)}`)
+    cloneSpinner.success(`Cloned repository to ${styleText('cyan', targetDir)}`)
 
     // Use the normalized HTTPS URL as the canonical git URL for linking to ensure
     // we have a consistent URL format for looking up projects.

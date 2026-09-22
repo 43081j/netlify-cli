@@ -10,12 +10,12 @@ import type BaseCommand from '../../commands/base-command.js'
 import { fileExistsAsync } from '../../lib/fs.js'
 import { normalizeBackslash } from '../../lib/path.js'
 import { detectBuildSettings } from '../build-info.js'
-import { chalk, logAndThrowError, log, type NormalizedCachedConfigConfig, warn } from '../command-helpers.js'
+import { styleText, logAndThrowError, log, type NormalizedCachedConfigConfig, warn } from '../command-helpers.js'
 import type { Plugin } from '../types.js'
 
 import { getRecommendPlugins, getUIPlugins } from './plugins.js'
 
-const formatTitle = (title: string) => chalk.cyan(title)
+const formatTitle = (title: string) => styleText('cyan', title)
 
 /**
  * Retrieve a list of plugins to auto install
@@ -222,7 +222,7 @@ export const saveNetlifyToml = async ({
 // @ts-expect-error TS(7031) FIXME: Binding element 'error' implicitly has an 'any' ty... Remove this comment to see the full error message
 export const formatErrorMessage = ({ error, message }) => {
   const errorMessage = error.json ? `${error.message} - ${JSON.stringify(error.json)}` : error.message
-  return `${message} with error: ${chalk.red(errorMessage)}`
+  return `${message} with error: ${styleText('red', errorMessage)}`
 }
 
 export type DeployKey = Awaited<ReturnType<NetlifyAPI['createDeployKey']>>

@@ -1,6 +1,6 @@
 import { Argument, Option } from 'commander'
 
-import { chalk, logAndThrowError, netlifyCommand } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, netlifyCommand } from '../../utils/command-helpers.js'
 import BaseCommand from '../base-command.js'
 
 import { CLI_LOG_LEVEL_CHOICES_STRING } from './log-levels.js'
@@ -35,9 +35,9 @@ const createDeprecatedFunctionCommand = (program: BaseCommand) => {
             : 'all functions'
         } from the last 10 minutes, run:`,
         '',
-        `  ${chalk.cyan(example)}`,
+        `  ${styleText('cyan', example)}`,
         '',
-        `Run ${chalk.cyan(`${base} logs --help`)} to see all available options.`,
+        `Run ${styleText('cyan', `${base} logs --help`)} to see all available options.`,
       ].join('\n'),
     )
   })
@@ -57,9 +57,9 @@ const createDeprecatedEdgeFunctionCommand = (program: BaseCommand) => {
           '',
           'To get edge function logs from the last 10 minutes, run:',
           '',
-          `  ${chalk.cyan(`${base} logs --source edge-functions --since 10m`)}`,
+          `  ${styleText('cyan', `${base} logs --source edge-functions --since 10m`)}`,
           '',
-          `Run ${chalk.cyan(`${base} logs --help`)} to see all available options.`,
+          `Run ${styleText('cyan', `${base} logs --help`)} to see all available options.`,
         ].join('\n'),
       ),
     )
@@ -81,13 +81,13 @@ const createDeprecatedDeployCommand = (program: BaseCommand) => {
         '',
         'To stream deploy logs in real time, run:',
         '',
-        `  ${chalk.cyan(`${base} logs --source deploy --follow`)}`,
+        `  ${styleText('cyan', `${base} logs --source deploy --follow`)}`,
         '',
         'To view historical deploy logs for the past hour, run:',
         '',
-        `  ${chalk.cyan(`${base} logs --source deploy --since 1h`)}`,
+        `  ${styleText('cyan', `${base} logs --source deploy --since 1h`)}`,
         '',
-        `Run ${chalk.cyan(`${base} logs --help`)} to see all available options.`,
+        `Run ${styleText('cyan', `${base} logs --help`)} to see all available options.`,
       ].join('\n'),
     ),
   )

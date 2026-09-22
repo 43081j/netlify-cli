@@ -1,7 +1,7 @@
 import type { OptionValues } from 'commander'
 import terminalLink from 'terminal-link'
 
-import { chalk } from '../../utils/command-helpers.js'
+import { styleText } from '../../utils/command-helpers.js'
 import requiresSiteInfo from '../../utils/hooks/requires-site-info.js'
 import type BaseCommand from '../base-command.js'
 
@@ -109,7 +109,7 @@ NOT the same as listing the functions that have been deployed. For that info you
       await functionsServe(options, command)
     })
 
-  const name = chalk.greenBright('`functions`')
+  const name = styleText('greenBright', '`functions`')
 
   return program
     .command('functions')

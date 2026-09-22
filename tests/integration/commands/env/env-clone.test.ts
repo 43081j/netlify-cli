@@ -2,7 +2,7 @@ import process from 'process'
 
 import { describe, expect, test, vi, beforeEach, afterAll } from 'vitest'
 
-import { chalk, log } from '../../../../src/utils/command-helpers.js'
+import { styleText, log } from '../../../../src/utils/command-helpers.js'
 import { generateEnvVarsList } from '../.././../../src/utils/prompts/env-clone-prompt.js'
 import { destructiveCommandMessages } from '../.././../../src/utils/prompts/prompt-messages.js'
 import { getEnvironmentVariables, withMockApi, setTTYMode, setCI, setTestingPrompts } from '../../utils/mock-api.js'
@@ -29,9 +29,7 @@ describe('env:clone command', () => {
     const envVarsList = generateEnvVarsList(sharedEnvVars)
     const warningMessage = generateWarning(siteIdTwo)
 
-    const successMessage = `Successfully cloned environment variables from ${chalk.green('site-name')} to ${chalk.green(
-      'site-name-2',
-    )}`
+    const successMessage = `Successfully cloned environment variables from ${styleText('green', 'site-name')} to ${styleText('green', 'site-name-2')}`
 
     beforeEach(() => {
       vi.resetModules()
@@ -128,9 +126,7 @@ describe('env:clone command', () => {
       test('should not run prompts if projects have no enviroment variables in common', async () => {
         await withMockApi(routes, async ({ apiUrl }) => {
           Object.assign(process.env, getEnvironmentVariables({ apiUrl }))
-          const successMessageSite3 = `Successfully cloned environment variables from ${chalk.green(
-            'site-name',
-          )} to ${chalk.green('site-name-3')}`
+          const successMessageSite3 = `Successfully cloned environment variables from ${styleText('green', 'site-name')} to ${styleText('green', 'site-name-3')}`
 
           const promptSpy = spyOnMockPrompt()
 

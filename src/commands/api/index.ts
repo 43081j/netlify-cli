@@ -1,4 +1,4 @@
-import { chalk } from '../../utils/command-helpers.js'
+import { styleText } from '../../utils/command-helpers.js'
 import BaseCommand from '../base-command.js'
 
 export const createApiCommand = (program: BaseCommand) =>
@@ -7,9 +7,7 @@ export const createApiCommand = (program: BaseCommand) =>
     .argument('[apiMethod]', 'Open API method to run')
     .description(
       `Run any Netlify API method
-For more information on available methods check out https://open-api.netlify.com/ or run '${chalk.grey(
-        'netlify api --list',
-      )}'`,
+For more information on available methods check out https://open-api.netlify.com/ or run '${styleText('grey', 'netlify api --list')}'`,
     )
     .option('-d, --data <data>', 'Data to use')
     .option('--list', 'List out available API methods', false)

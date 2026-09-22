@@ -6,7 +6,7 @@ import { OptionValues } from 'commander'
 import inquirer from 'inquirer'
 import fetch from 'node-fetch'
 
-import { APIError, NETLIFYDEVWARN, chalk, logAndThrowError, exit } from '../../utils/command-helpers.js'
+import { APIError, NETLIFYDEVWARN, styleText, logAndThrowError, exit } from '../../utils/command-helpers.js'
 import { BACKGROUND, CLOCKWORK_USERAGENT, getFunctions } from '../../utils/functions/index.js'
 import BaseCommand from '../base-command.js'
 
@@ -107,9 +107,7 @@ const getNameFromArgs = async function (functions, options, argumentName) {
     }
 
     console.warn(
-      `Function name ${chalk.yellow(
-        functionToTrigger,
-      )} supplied but no matching function found in your functions folder, forcing you to pick a valid one...`,
+      `Function name ${styleText('yellow', functionToTrigger)} supplied but no matching function found in your functions folder, forcing you to pick a valid one...`,
     )
   }
 

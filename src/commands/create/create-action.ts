@@ -15,7 +15,7 @@ import type { NetlifyAPI } from '@netlify/api'
 import { LocalState } from '@netlify/dev-utils'
 import { Octokit } from '@octokit/rest'
 
-import { chalk, logAndThrowError, log, logJson, warn, type APIError } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, log, logJson, warn, type APIError } from '../../utils/command-helpers.js'
 import { ensureNetlifyIgnore } from '../../utils/gitignore.js'
 import { getGitHubToken as promptForGitHubToken } from '../../utils/gh-auth.js'
 import { startSpinner, stopSpinner } from '../../lib/spinner.js'
@@ -261,8 +261,8 @@ export const createAction = async (promptArg: string, options: CreateOptions, co
   // Resolve prompt
   let finalPrompt: string
   if (!prompt && !promptArg) {
-    log(chalk.bold('What do you want to build? Type out the prompt for your project:'))
-    log(chalk.dim('(Press Enter on an empty line to submit)'))
+    log(styleText('bold', 'What do you want to build? Type out the prompt for your project:'))
+    log(styleText('dim', '(Press Enter on an empty line to submit)'))
     finalPrompt = await readMultilineInput()
   } else {
     finalPrompt = (promptArg || prompt) ?? ''
@@ -327,7 +327,7 @@ export const createAction = async (promptArg: string, options: CreateOptions, co
       })) as unknown as SiteInfo
 
       stopSpinner({ spinner: siteSpinner })
-      log(`${chalk.green('✓')} Project created: ${chalk.cyan(site.name)}`)
+      log(`${styleText('green', '✓')} Project created: ${styleText('cyan', site.name)}`)
       break
     } catch (error_) {
       if ((error_ as APIError).status === 422 && siteName && retries < MAX_NAME_RETRIES) {
@@ -419,17 +419,18 @@ export const createAction = async (promptArg: string, options: CreateOptions, co
     }
 
     log()
-    log(`${chalk.green('✓')} Agent run started! The agent is now building your site in the background.`)
+    log(`${styleText('green', '✓')} Agent run started! The agent is now building your site in the background.`)
     log()
-    log(chalk.bold('Next steps:'))
+    log(styleText('bold', 'Next steps:'))
     log(`  View progress in the browser:`)
-    log(`    ${chalk.blue(agentRunCreateUrl)}`)
+    log(`    ${styleText('blue', agentRunCreateUrl)}`)
     log()
     log(`  Check status from the CLI:`)
-    log(`    ${chalk.cyan(showCmd)}`)
+    log(`    ${styleText('cyan', showCmd)}`)
     log()
     log(
-      chalk.dim(
+      styleText(
+        'dim',
         "The agent typically takes a few minutes to complete. You'll be able to see the site URL once it's done.",
       ),
     )
@@ -461,7 +462,7 @@ export const createAction = async (promptArg: string, options: CreateOptions, co
   } catch (error_) {
     stopSpinner({ spinner: pollSpinner, error: true })
     log()
-    log(`  View details: ${chalk.blue(agentRunUrl)}`)
+    log(`  View details: ${styleText('blue', agentRunUrl)}`)
     return logAndThrowError(`Error polling agent status: ${(error_ as Error).message}`)
   }
 
@@ -486,7 +487,7 @@ export const createAction = async (promptArg: string, options: CreateOptions, co
   })
 
   if (agentRunner.state === 'done') {
-    log(`${chalk.green('✓')} Agent run complete!`)
+    log(`${styleText('green', '✓')} Agent run complete!`)
 
     // Step 4: Download source and link project
     const projectDir = path.resolve(dir || '.', site.name)
@@ -509,12 +510,12 @@ export const createAction = async (promptArg: string, options: CreateOptions, co
         try {
           await downloadAndExtractSource(agentRunner.latest_session_deploy_id, projectDir, api, apiOpts)
           stopSpinner({ spinner: downloadSpinner })
-          log(`${chalk.green('✓')} Source downloaded to ${chalk.cyan(relativeDir)}`)
+          log(`${styleText('green', '✓')} Source downloaded to ${styleText('cyan', relativeDir)}`)
 
           const state = new LocalState(projectDir)
           state.set('siteId', site.id)
           await ensureNetlifyIgnore(projectDir)
-          log(`${chalk.green('✓')} Project linked to ${chalk.cyan(site.name)}`)
+          log(`${styleText('green', '✓')} Project linked to ${styleText('cyan', site.name)}`)
           downloaded = true
         } catch (error_) {
           stopSpinner({ spinner: downloadSpinner, error: true })
@@ -542,7 +543,9 @@ export const createAction = async (promptArg: string, options: CreateOptions, co
             stopSpinner({ spinner: repoSpinner })
 
             githubRepoPath = `${repoOwner}/${site.name}`
-            log(`${chalk.green('✓')} GitHub repo created: ${chalk.cyan(`https://github.com/${githubRepoPath}`)}`)
+            log(
+              `${styleText('green', '✓')} GitHub repo created: ${styleText('cyan', `https://github.com/${githubRepoPath}`)}`,
+            )
 
             if (downloaded) {
               try {
@@ -552,7 +555,7 @@ export const createAction = async (promptArg: string, options: CreateOptions, co
                 await execFile('git', ['fetch', 'origin'], { cwd: projectDir })
                 await execFile('git', ['reset', 'origin/main'], { cwd: projectDir })
                 await execFile('git', ['branch', '-u', 'origin/main'], { cwd: projectDir })
-                log(`${chalk.green('✓')} Git repository initialized`)
+                log(`${styleText('green', '✓')} Git repository initialized`)
               } catch {
                 // Non-fatal: local git init is best-effort
               }
@@ -568,26 +571,26 @@ export const createAction = async (promptArg: string, options: CreateOptions, co
     }
 
     log()
-    log(`  Site URL:  ${chalk.cyan(siteUrl)}`)
-    log(`  Admin URL: ${chalk.blue(site.admin_url)}`)
+    log(`  Site URL:  ${styleText('cyan', siteUrl)}`)
+    log(`  Admin URL: ${styleText('blue', site.admin_url)}`)
     if (githubRepoPath) {
-      log(`  Repo URL:  ${chalk.blue(`https://github.com/${githubRepoPath}`)}`)
+      log(`  Repo URL:  ${styleText('blue', `https://github.com/${githubRepoPath}`)}`)
     }
     log()
     if (downloaded) {
-      log(chalk.bold('Next steps:'))
-      log(`  cd ${chalk.cyan(relativeDir)} and start making changes`)
+      log(styleText('bold', 'Next steps:'))
+      log(`  cd ${styleText('cyan', relativeDir)} and start making changes`)
       if (githubRepoPath) {
         log('  When ready, push your changes to your repo and Netlify will automatically deploy your changes')
       } else {
-        log(`  When ready, run ${chalk.cyan('netlify deploy')} to publish your new changes`)
+        log(`  When ready, run ${styleText('cyan', 'netlify deploy')} to publish your new changes`)
       }
       log()
     }
   } else {
-    log(`${chalk.red('✗')} Agent run ${formatStatus(agentRunner.state ?? 'error')}`)
+    log(`${styleText('red', '✗')} Agent run ${formatStatus(agentRunner.state ?? 'error')}`)
     log()
-    log(`  View details: ${chalk.blue(agentRunUrl)}`)
+    log(`  View details: ${styleText('blue', agentRunUrl)}`)
   }
   log()
 }

@@ -1,7 +1,7 @@
 import type { OptionValues } from 'commander'
 import AsciiTable from 'ascii-table'
 
-import { chalk, logAndThrowError, log, logJson } from '../../utils/command-helpers.js'
+import { styleText, logAndThrowError, log, logJson } from '../../utils/command-helpers.js'
 import { startSpinner, stopSpinner } from '../../lib/spinner.js'
 import type BaseCommand from '../base-command.js'
 import type { AgentRunner, AgentRunnerSession } from './types.js'
@@ -54,10 +54,10 @@ export const agentsList = async (options: AgentListOptions, command: BaseCommand
     }
 
     if (!agentRunners || agentRunners.length === 0) {
-      log(chalk.yellow('No agent tasks found for this site.'))
+      log(styleText('yellow', 'No agent tasks found for this site.'))
       log(``)
       log(`Create your first agent task with:`)
-      log(`  ${chalk.cyan('netlify agents:create')}`)
+      log(`  ${styleText('cyan', 'netlify agents:create')}`)
       return
     }
 
@@ -147,9 +147,11 @@ export const agentsList = async (options: AgentListOptions, command: BaseCommand
     log(tableOutput)
 
     log('')
-    log(chalk.dim(`Total: ${agentRunners.length.toString()} agent task(s)`))
+    log(styleText('dim', `Total: ${agentRunners.length.toString()} agent task(s)`))
     log('')
-    log(`${chalk.dim('Use')} ${chalk.cyan('netlify agents:show <id>')} ${chalk.dim('to view details')}`)
+    log(
+      `${styleText('dim', 'Use')} ${styleText('cyan', 'netlify agents:show <id>')} ${styleText('dim', 'to view details')}`,
+    )
 
     return agentRunners
   } catch (error_) {

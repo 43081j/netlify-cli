@@ -1,6 +1,6 @@
 import process from 'process'
 
-import chalk from 'chalk'
+import { styleText } from '../../../../src/utils/command-helpers.js'
 import { describe, expect, test, vi, beforeEach, afterAll } from 'vitest'
 
 import { log } from '../../../../src/utils/command-helpers.js'
@@ -278,9 +278,7 @@ describe('env:set command', async () => {
 
     const warningMessage = generateWarning(existingVar)
 
-    const successMessage = `Set environment variable ${chalk.yellow(
-      `${existingVar}=${newEnvValue}`,
-    )} in the ${chalk.magenta('all')} context`
+    const successMessage = `Set environment variable ${styleText('yellow', `${existingVar}=${newEnvValue}`)} in the ${styleText('magenta', 'all')} context`
 
     beforeEach(() => {
       vi.resetModules()
@@ -336,7 +334,7 @@ describe('env:set command', async () => {
           expect(log).not.toHaveBeenCalledWith(warningMessage)
           expect(log).not.toHaveBeenCalledWith(overwriteNotice)
           expect(log).toHaveBeenCalledWith(
-            `Set environment variable ${chalk.yellow(`NEW_ENV_VAR=NEW_VALUE`)} in the ${chalk.magenta('all')} context`,
+            `Set environment variable ${styleText('yellow', `NEW_ENV_VAR=NEW_VALUE`)} in the ${styleText('magenta', 'all')} context`,
           )
         })
       })

@@ -9,7 +9,7 @@ import { getGlobalConfigStore } from '@netlify/dev-utils'
 
 import {
   BANG,
-  chalk,
+  styleText,
   logAndThrowError,
   exit,
   log,
@@ -87,7 +87,7 @@ process.on('uncaughtException', async (err: AddressInUseError | Error) => {
   try {
     if ('code' in err && err.code === 'EADDRINUSE') {
       logError(
-        `${chalk.red(`Port ${err.port} is already in use`)}\n\n` +
+        `${styleText('red', `Port ${err.port} is already in use`)}\n\n` +
           `Your serverless functions might be initializing a server\n` +
           `to listen on specific port without properly closing it.\n\n` +
           `This behavior is generally not advised\n` +
@@ -99,14 +99,10 @@ process.on('uncaughtException', async (err: AddressInUseError | Error) => {
       )
     } else {
       logError(
-        `${chalk.red(
-          'Netlify CLI has terminated unexpectedly.',
-        )}\n\nPlease report this problem with reproduction steps at ${chalk.underline(
-          'https://ntl.fyi/cli-error',
-        )} including the error details below.\n`,
+        `${styleText('red', 'Netlify CLI has terminated unexpectedly.')}\n\nPlease report this problem with reproduction steps at ${styleText('underline', 'https://ntl.fyi/cli-error')} including the error details below.\n`,
       )
 
-      console.log(chalk.dim(err.stack || err))
+      console.log(styleText('dim', err.stack ?? String(err)))
 
       const systemInfo = await Promise.race([
         getSystemInfo().catch(() => ''),
@@ -118,7 +114,7 @@ process.on('uncaughtException', async (err: AddressInUseError | Error) => {
       ])
 
       if (systemInfo) {
-        console.log(chalk.dim(systemInfo))
+        console.log(styleText('dim', systemInfo))
       }
       reportError(err, { severity: 'error' })
     }
@@ -199,7 +195,7 @@ const mainCommand = async function (options, command) {
   }
 
   process.stderr.write(
-    ` ${chalk.yellow(BANG)}   Warning: ${chalk.yellow(command.args[0])} is not a ${command.name()} command.\n`,
+    ` ${styleText('yellow', BANG)}   Warning: ${styleText('yellow', command.args[0])} is not a ${command.name()} command.\n`,
   )
 
   // @ts-expect-error TS(7006) FIXME: Parameter 'cmd' implicitly has an 'any' type.
@@ -210,7 +206,7 @@ const mainCommand = async function (options, command) {
   // without prompting, and display full help for available commands.
   // Diagnostics belong on stderr so stdout stays clean for machine consumers.
   if (!isInteractive()) {
-    process.stderr.write(`\nDid you mean ${chalk.blue(suggestion)}?\n\n`)
+    process.stderr.write(`\nDid you mean ${styleText('blue', suggestion)}?\n\n`)
     command.outputHelp({ error: true })
     process.stderr.write('\n')
     logError(`Run ${NETLIFY_CYAN(`${command.name()} help`)} for a list of available commands.`)
@@ -221,7 +217,7 @@ const mainCommand = async function (options, command) {
     const prompt = inquirer.prompt({
       type: 'confirm',
       name: 'suggestion',
-      message: `Did you mean ${chalk.blue(suggestion)}`,
+      message: `Did you mean ${styleText('blue', suggestion)}`,
       default: false,
     })
 
@@ -313,8 +309,8 @@ Exit codes: 0 ok, 1 error, 2 usage, 4 needs-input
     })
     .configureOutput({
       outputError: (message, write) => {
-        write(` ${chalk.red(BANG)}   Error: ${message.replace(/^error:\s/g, '')}`)
-        write(` ${chalk.red(BANG)}   See more help with --help\n`)
+        write(` ${styleText('red', BANG)}   Error: ${message.replace(/^error:\s/g, '')}`)
+        write(` ${styleText('red', BANG)}   See more help with --help\n`)
       },
     })
     .exitOverride(function (this: BaseCommand, error: CommanderError) {

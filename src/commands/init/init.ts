@@ -2,7 +2,7 @@ import { OptionValues } from 'commander'
 import inquirer from 'inquirer'
 import { isEmpty } from '../../utils/object-utilities.js'
 
-import { chalk, exit, log, netlifyCommand } from '../../utils/command-helpers.js'
+import { styleText, exit, log, netlifyCommand } from '../../utils/command-helpers.js'
 import getRepoData from '../../utils/get-repo-data.js'
 import { ensureNetlifyIgnore } from '../../utils/gitignore.js'
 import { configureRepo } from '../../utils/init/config.js'
@@ -25,15 +25,15 @@ const logExistingAndExit = ({ siteInfo }: { siteInfo: SiteInfo }): never => {
   log()
   log(`This project has been initialized`)
   log()
-  log(`Project Name:  ${chalk.cyan(siteInfo.name)}`)
-  log(`Project Url:   ${chalk.cyan(siteInfo.ssl_url || siteInfo.url)}`)
-  log(`Project Repo:  ${chalk.cyan(getRepoUrl(siteInfo))}`)
-  log(`Project Id:    ${chalk.cyan(siteInfo.id)}`)
-  log(`Admin URL:  ${chalk.cyan(siteInfo.admin_url)}`)
+  log(`Project Name:  ${styleText('cyan', siteInfo.name)}`)
+  log(`Project Url:   ${styleText('cyan', siteInfo.ssl_url || siteInfo.url)}`)
+  log(`Project Repo:  ${styleText('cyan', getRepoUrl(siteInfo))}`)
+  log(`Project Id:    ${styleText('cyan', siteInfo.id)}`)
+  log(`Admin URL:  ${styleText('cyan', siteInfo.admin_url)}`)
   log()
   log(`To disconnect this directory and create a new project (or link to another project ID)`)
-  log(`1. Run ${chalk.cyanBright.bold(`${netlifyCommand()} unlink`)}`)
-  log(`2. Then run ${chalk.cyanBright.bold(`${netlifyCommand()} init`)} again`)
+  log(`1. Run ${styleText(['cyanBright', 'bold'], `${netlifyCommand()} unlink`)}`)
+  log(`2. Then run ${styleText(['cyanBright', 'bold'], `${netlifyCommand()} init`)} again`)
   return exit()
 }
 
@@ -81,40 +81,40 @@ const createNewSiteAndExit = async ({
   }
 
   log()
-  const defaultExitMesage = `To deploy to this project, run ${chalk.cyanBright.bold(`${netlifyCommand()} deploy`)}.`
+  const defaultExitMesage = `To deploy to this project, run ${styleText(['cyanBright', 'bold'], `${netlifyCommand()} deploy`)}.`
   log(customizeExitMessage?.(LINKED_NEW_SITE_EXIT_CODE, defaultExitMesage) ?? defaultExitMesage)
   return exit()
 }
 
 const logGitSetupInstructionsAndExit = (): never => {
   log()
-  log(`${chalk.bold('To initialize a new git repo follow the steps below.')}
+  log(`${styleText('bold', 'To initialize a new git repo follow the steps below.')}
 
 1. Initialize a new repo:
 
-   ${chalk.cyanBright.bold('git init')}
+   ${styleText(['cyanBright', 'bold'], 'git init')}
 
 2. Add your files
 
-   ${chalk.cyanBright.bold('git add .')}
+   ${styleText(['cyanBright', 'bold'], 'git add .')}
 
 3. Commit your files
 
-   ${chalk.cyanBright.bold("git commit -m 'initial commit'")}
+   ${styleText(['cyanBright', 'bold'], "git commit -m 'initial commit'")}
 
-4. Create a new repo in GitHub ${chalk.cyanBright.bold('https://github.com/new')}
+4. Create a new repo in GitHub ${styleText(['cyanBright', 'bold'], 'https://github.com/new')}
 
 5. Link the remote repo with this local directory
 
-   ${chalk.cyanBright.bold('git remote add origin git@github.com:YourGithubName/your-repo-slug.git')}
+   ${styleText(['cyanBright', 'bold'], 'git remote add origin git@github.com:YourGithubName/your-repo-slug.git')}
 
 6. Push up your files
 
-   ${chalk.cyanBright.bold('git push -u origin main')}
+   ${styleText(['cyanBright', 'bold'], 'git push -u origin main')}
 
 7. Initialize your Netlify Site
 
-   ${chalk.cyanBright.bold(`${netlifyCommand()} init`)}
+   ${styleText(['cyanBright', 'bold'], `${netlifyCommand()} init`)}
 `)
   return exit()
 }
@@ -136,7 +136,7 @@ const handleNoGitRemoteAndExit = async ({
   customizeExitMessage: InitExitMessageCustomizer | undefined
 }): Promise<never> => {
   log()
-  log(chalk.yellow('No git remote was found, would you like to set one up?'))
+  log(styleText('yellow', 'No git remote was found, would you like to set one up?'))
   log(`
 It is recommended that you initialize a project that has a remote repository in GitHub.
 
@@ -210,7 +210,7 @@ const logExistingRepoSetupAndExit = ({
   customizeExitMessage: InitExitMessageCustomizer | undefined
 }): void => {
   log()
-  log(chalk.underline.bold(`Success`))
+  log(styleText(['underline', 'bold'], `Success`))
 
   const defaultExitMessage = `This project "${siteName}" is configured to automatically deploy via ${repoUrl}.`
   log(customizeExitMessage?.(LINKED_EXISTING_SITE_EXIT_CODE, defaultExitMessage) ?? defaultExitMessage)
