@@ -52,6 +52,7 @@
     "typecheck:watch": "node ./node_modules/typescript-native/bin/tsc --watch"
   },
   "dependencies": {
+    "@clack/prompts": "^1.8.1",
     "@fastify/static": "^10.0.0",
     "@netlify/ai": "^1.0.1",
     "@netlify/api": "^15.1.2",
@@ -123,6 +124,7 @@
     "maxstache-stream": "^1.0.4",
     "modern-tar": "^0.8.0",
     "multiparty": "^4.2.3",
+    "nano-updater": "^0.7.0",
     "nanospinner": "^1.2.2",
     "netlify-redirector": "^0.5.0",
     "node-fetch": "^3.3.2",
@@ -145,7 +147,6 @@
     "toml": "^4.0.0",
     "tomlify-j0.4": "^3.0.0",
     "ulid": "^3.0.1",
-    "update-notifier": "^7.3.1",
     "write-file-atomic": "^5.0.1",
     "ws": "^8.19.0",
     "yauzl": "^3.3.1"
@@ -184,7 +185,6 @@
     "@types/semver": "^7.7.1",
     "@types/serialize-javascript": "^5.0.4",
     "@types/source-map-support": "^0.5.10",
-    "@types/update-notifier": "^6.0.8",
     "@types/write-file-atomic": "^4.0.3",
     "@types/ws": "^8.18.1",
     "@types/yauzl": "^2.10.3",
