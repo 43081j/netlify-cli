@@ -18,8 +18,7 @@ const normalizeSnapshot = (
   opts: { duration?: boolean | undefined; filePath?: boolean | undefined } = {},
 ) =>
   normalize(snapshot, opts).replace(
-    // eslint-disable-next-line no-irregular-whitespace
-    /⬥ Static server listening to \d+[\s╭─│─╰╮╯⬥ ]+ Local dev server ready: http:\/\/localhost:\d+ [\s╭─│─╰╮╯]+/m,
+    /⬥ Static server listening to \d+[\s╭─│─╰╮╯⬥]+ Local dev server ready: http:\/\/localhost:\d+ [\s╭─│─╰╮╯]+/m,
     `⬥ Static server listening to <SNAPSHOT_PORT_NORMALIZED>
 
    ┌──────────────────────────────────────────────────────────────────────────┐

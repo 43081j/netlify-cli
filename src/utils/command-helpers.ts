@@ -64,7 +64,6 @@ export const getRequestUserAgent = (env: NodeJS.ProcessEnv = process.env): strin
 const BASE_FLAGS = new Set(['--debug', '--http-proxy', '--http-proxy-certificate-filename'])
 
 export const NETLIFY_CYAN = chalk.rgb(40, 180, 170)
-export const NETLIFY_CYAN_HEX = '#28b5ac'
 
 // TODO(serhalp) I *think* this "dev" naming is a vestige of the predecessor of the CLI? Rename to avoid
 // confusion with `netlify dev` command?

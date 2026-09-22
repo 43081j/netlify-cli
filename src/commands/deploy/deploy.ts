@@ -24,9 +24,9 @@ import { featureFlags as edgeFunctionsFeatureFlags } from '../../lib/edge-functi
 import { normalizeFunctionsConfig } from '../../lib/functions/config.js'
 import { BACKGROUND_FUNCTIONS_WARNING } from '../../lib/log.js'
 import { type Spinner, startSpinner, stopSpinner } from '../../lib/spinner.js'
+import { logBox } from '../../utils/box.js'
 import { detectFrameworkSettings, getDefaultConfig } from '../../utils/build-info.js'
 import {
-  NETLIFY_CYAN_HEX,
   NETLIFYDEVERR,
   NETLIFYDEVLOG,
   chalk,
@@ -66,7 +66,6 @@ import { sitesCreate } from '../sites/sites-create.js'
 import type { $TSFixMe } from '../types.js'
 import { SiteInfo } from '../../utils/types.js'
 import type { DeployOptionValues } from './option_values.js'
-import boxen from 'boxen'
 import terminalLink from 'terminal-link'
 import { anyEdgeFunctionsDirectoryExists } from '../../lib/edge-functions/get-directories.js'
 
@@ -897,23 +896,10 @@ const printResults = ({
     }
   } else {
     const message = deployToProduction
-      ? `Deployed to production URL: ${terminalLink(results.siteUrl, results.siteUrl, { fallback: false })}\n
-    Unique deploy URL: ${terminalLink(results.deployUrl, results.deployUrl, { fallback: false })}`
+      ? `Deployed to production URL: ${terminalLink(results.siteUrl, results.siteUrl, { fallback: false })}\n\nUnique deploy URL: ${terminalLink(results.deployUrl, results.deployUrl, { fallback: false })}`
       : `Deployed draft to ${terminalLink(results.deployUrl, results.deployUrl, { fallback: false })}`
 
-    log(
-      boxen(message, {
-        padding: 1,
-        margin: 1,
-        textAlignment: 'center',
-        borderStyle: 'round',
-        borderColor: NETLIFY_CYAN_HEX,
-        // This is an intentional half-width space to work around a unicode padding math bug in boxen
-        // eslint-disable-next-line no-irregular-whitespace
-        title: `⬥  ${deployToProduction ? 'Production deploy' : 'Draft deploy'} is live ⬥ `,
-        titleAlignment: 'center',
-      }),
-    )
+    logBox(message, `⬥ ${deployToProduction ? 'Production deploy' : 'Draft deploy'} is live ⬥`)
 
     log(prettyjson.render(msgData))
 
@@ -1305,17 +1291,7 @@ const anonymousDeploy = async (options: DeployOptionValues, command: BaseCommand
     ? `Site URL:  ${terminalLink(siteUrl, siteUrl, { fallback: false })}\n\nPassword:  My-Drop-Site`
     : `Site URL:  ${terminalLink(siteUrl, siteUrl, { fallback: false })}`
 
-  log(
-    boxen(boxContent, {
-      padding: 1,
-      margin: 1,
-      textAlignment: 'center',
-      borderStyle: 'round',
-      borderColor: NETLIFY_CYAN_HEX,
-      title: `⬥  Anonymous deploy is live ⬥ `,
-      titleAlignment: 'center',
-    }),
-  )
+  logBox(boxContent, '⬥ Anonymous deploy is live ⬥')
   log(`  ${chalk.bold('Claim on Netlify:')}`)
   log(`  ${claimUrl}`)
   log('')
