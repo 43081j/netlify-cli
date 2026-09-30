@@ -26,7 +26,7 @@ import {
   isEdgeFunctionFile,
 } from './process-files.js'
 import uploadFiles from './upload-files.js'
-import { getUploadList, waitForDeploy, waitForDiff } from './util.js'
+import { getUploadList, pluralize, waitForDeploy, waitForDiff } from './util.js'
 import type { DeployEvent } from './status-cb.js'
 import type { DeployEnvironmentVariable } from '../env/deploy-env-vars.js'
 import { temporaryDirectory } from '../temporary-file.js'
@@ -35,9 +35,12 @@ export type { DeployEvent }
 
 const buildStatsString = (possibleParts: (string | false | undefined)[]) => {
   const parts = possibleParts.filter(Boolean)
-  const message = parts.slice(0, -1).join(', ')
 
-  return parts.length > 1 ? `${message} and ${parts[parts.length - 1]}` : message
+  if (parts.length < 2) {
+    return parts.join('')
+  }
+
+  return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`
 }
 
 export const deploySite = async (
@@ -71,6 +74,9 @@ export const deploySite = async (
     // @ts-expect-error TS(2525) FIXME: Initializer provides no value for this binding ele... Remove this comment to see the full error message
     manifestPath,
     maxRetry = DEFAULT_MAX_RETRY,
+    packagePath,
+    serverEnabled,
+    serverManifestPath,
     // @ts-expect-error TS(2525) FIXME: Initializer provides no value for this binding ele... Remove this comment to see the full error message
     siteRoot,
     // @ts-expect-error TS(2525) FIXME: Initializer provides no value for this binding ele... Remove this comment to see the full error message
@@ -88,6 +94,9 @@ export const deploySite = async (
     draft?: boolean
     environment?: DeployEnvironmentVariable[]
     maxRetry?: number
+    packagePath?: string
+    serverEnabled?: boolean
+    serverManifestPath?: string
     statusCb?: (status: DeployEvent) => void
     syncFileLimit?: number
     tmpDir?: string
@@ -97,7 +106,7 @@ export const deploySite = async (
 ) => {
   statusCb({
     type: 'hashing',
-    msg: `Hashing files...`,
+    msg: `Preparing deploy...`,
     phase: 'start',
   })
 
@@ -106,7 +115,7 @@ export const deploySite = async (
   const dbMigrationsDistPath = await getDbMigrationsDistPathIfExists(workingDir)
   const [
     { files: staticFiles, filesShaMap: staticShaMap },
-    { fnConfig, fnShaMap, functionSchedules, functions, functionsWithNativeModules },
+    { fnConfig, fnShaMap, functionSchedules, functions, functionsWithNativeModules, server, serverShaMap },
     configFile,
     { edgeFunctions, edgeFnShaMap },
   ] = await Promise.all([
@@ -126,6 +135,9 @@ export const deploySite = async (
       hashAlgorithm,
       statusCb,
       manifestPath,
+      packagePath,
+      serverEnabled,
+      serverManifestPath,
       skipFunctionsCache,
       rootDir: siteRoot,
     }),
@@ -140,19 +152,20 @@ export const deploySite = async (
   const filesCount = Object.keys(files).length - edgeFunctionsCount
   const functionsCount = Object.keys(functions).length
   const stats = buildStatsString([
-    filesCount > 0 && `${filesCount} files`,
-    functionsCount > 0 && `${functionsCount} functions`,
-    edgeFunctionsCount > 0 && 'edge functions',
+    filesCount > 0 && pluralize(filesCount, 'file'),
+    functionsCount > 0 && pluralize(functionsCount, 'function'),
+    edgeFunctionsCount > 0 && pluralize(edgeFunctionsCount, 'edge function'),
+    server && 'a server',
   ])
 
   statusCb({
     type: 'hashing',
-    msg: `Finished hashing ${stats}`,
+    msg: `Deploying ${stats}`,
     phase: 'stop',
   })
 
-  if (filesCount === 0 && functionsCount === 0) {
-    throw new Error('No files or functions to deploy')
+  if (filesCount === 0 && functionsCount === 0 && edgeFunctionsCount === 0 && !server) {
+    throw new Error('Nothing to deploy')
   }
 
   if (functionsWithNativeModules.length !== 0) {
@@ -173,7 +186,7 @@ For more information, visit https://ntl.fyi/cli-native-modules.`)
 
   statusCb({
     type: 'create-deploy',
-    msg: 'CDN diffing files...',
+    msg: 'Checking what needs to be uploaded...',
     phase: 'start',
   })
 
@@ -188,6 +201,7 @@ For more information, visit https://ntl.fyi/cli-native-modules.`)
       files,
       functions,
       edge_functions: edgeFunctions,
+      server,
       function_schedules: functionSchedules,
       functions_config: fnConfig,
       async: Object.keys(files).length > syncFileLimit,
@@ -208,20 +222,31 @@ For more information, visit https://ntl.fyi/cli-native-modules.`)
 
   if (deployParams.body.async) deploy = await waitForDiff(api, deploy.id, siteId, deployTimeout)
 
-  const { required: requiredFiles, required_functions: requiredFns, required_edge_functions: requiredEdgeFns } = deploy
+  const {
+    required: requiredFiles,
+    required_functions: requiredFns,
+    required_edge_functions: requiredEdgeFns,
+    required_server: requiredServer,
+  } = deploy
+
+  const newStats = buildStatsString([
+    requiredFiles.length > 0 && pluralize(requiredFiles.length, 'file'),
+    (requiredFns?.length ?? 0) > 0 && pluralize(requiredFns.length, 'function'),
+    (requiredEdgeFns?.length ?? 0) > 0 && pluralize(requiredEdgeFns.length, 'edge function'),
+    (requiredServer?.length ?? 0) > 0 && 'a server',
+  ])
 
   statusCb({
     type: 'create-deploy',
-    msg: `CDN requesting ${requiredFiles.length} files${
-      Array.isArray(requiredFns) ? ` and ${requiredFns.length} functions` : ''
-    }${Array.isArray(requiredEdgeFns) ? ` and ${requiredEdgeFns.length} edge functions` : ''}`,
+    msg: newStats ? `Found ${newStats} to upload` : 'Everything is uploaded',
     phase: 'stop',
   })
 
   const filesUploadList = getUploadList(requiredFiles, filesShaMap)
   const functionsUploadList = getUploadList(requiredFns, fnShaMap)
   const edgeFunctionsUploadList = getUploadList(requiredEdgeFns, edgeFnShaMap)
-  const uploadList = [...filesUploadList, ...functionsUploadList, ...edgeFunctionsUploadList]
+  const serverUploadList = getUploadList(requiredServer, serverShaMap)
+  const uploadList = [...filesUploadList, ...functionsUploadList, ...edgeFunctionsUploadList, ...serverUploadList]
 
   await uploadFiles(api, deployId, uploadList, { concurrentUpload, statusCb, maxRetry })
 

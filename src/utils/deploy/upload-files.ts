@@ -6,8 +6,12 @@ import pMap from 'p-map'
 
 import { UPLOAD_INITIAL_DELAY, UPLOAD_MAX_DELAY, UPLOAD_RANDOM_FACTOR } from './constants.js'
 import type { StatusCallback } from './status-cb.js'
+import { pluralize } from './util.js'
 
-export type UploadApi = Pick<NetlifyAPI, 'uploadDeployFile' | 'uploadDeployFunction' | 'uploadDeployEdgeFunction'>
+export type UploadApi = Pick<
+  NetlifyAPI,
+  'uploadDeployFile' | 'uploadDeployFunction' | 'uploadDeployEdgeFunction' | 'uploadDeployServer'
+>
 
 // `@netlify/api` only models path and query parameters, so header parameters such as
 // `X-Nf-Retry-Count` have to be added on top of the generated parameter types.
@@ -15,6 +19,7 @@ type WithRetryCount<T> = T & { xNfRetryCount?: number }
 
 type UploadDeployFunctionParams = WithRetryCount<Parameters<UploadApi['uploadDeployFunction']>[0]>
 type UploadDeployEdgeFunctionParams = WithRetryCount<Parameters<UploadApi['uploadDeployEdgeFunction']>[0]>
+type UploadDeployServerParams = WithRetryCount<Parameters<UploadApi['uploadDeployServer']>[0]>
 
 interface UploadFileBase {
   filepath: string
@@ -38,7 +43,12 @@ export interface EdgeFunctionUploadFile extends UploadFileBase {
   hash: string
 }
 
-export type UploadFile = StaticUploadFile | FunctionUploadFile | EdgeFunctionUploadFile
+export interface ServerUploadFile extends UploadFileBase {
+  assetType: 'server'
+  hash: string
+}
+
+export type UploadFile = StaticUploadFile | FunctionUploadFile | EdgeFunctionUploadFile | ServerUploadFile
 
 class MissingAssetTypeError extends Error {
   constructor(readonly fileObj: unknown) {
@@ -59,9 +69,14 @@ const uploadFiles = async (
   { concurrentUpload, maxRetry, statusCb }: UploadFilesOptions,
 ) => {
   if (!concurrentUpload || !maxRetry) throw new Error('Missing required option concurrentUpload')
+
+  if (uploadList.length === 0) {
+    return []
+  }
+
   statusCb({
     type: 'upload',
-    msg: `Uploading ${uploadList.length} files`,
+    msg: `Uploading ${pluralize(uploadList.length, 'file')}`,
     phase: 'start',
   })
 
@@ -123,6 +138,21 @@ const uploadFiles = async (
           return api.uploadDeployEdgeFunction(params)
         }, maxRetry)
       }
+      case 'server': {
+        return await retryUpload((retryCount) => {
+          const params: UploadDeployServerParams = {
+            body: readStreamCtor,
+            deployId,
+            codeSha: fileObj.hash,
+          }
+
+          if (retryCount > 0) {
+            params.xNfRetryCount = retryCount
+          }
+
+          return api.uploadDeployServer(params)
+        }, maxRetry)
+      }
       default: {
         throw new MissingAssetTypeError(fileObj)
       }
@@ -132,7 +162,7 @@ const uploadFiles = async (
   const results = await pMap(uploadList, uploadFile, { concurrency: concurrentUpload })
   statusCb({
     type: 'upload',
-    msg: `Finished uploading ${uploadList.length} assets`,
+    msg: `Finished uploading ${pluralize(uploadList.length, 'asset')}`,
     phase: 'stop',
   })
   return results
